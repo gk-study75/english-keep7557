@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Keep風 英語アクティブリコール帳</title>
+  <title>Keep風 多言語リコール帳</title>
   <style>
     :root {
       --bg: #f1f3f4;
@@ -13,6 +13,9 @@
       --border: #e0e0e0;
       --accent: #fbbc04;
       --blue: #1a73e8;
+      --blue-light: #e8f0fe;
+      --purple: #7627bb;
+      --purple-light: #f3e8fd;
       --green: #1e8e3e;
       --green-light: #e6f4ea;
       --red: #d93025;
@@ -76,6 +79,7 @@
       justify-content: space-between;
       align-items: baseline;
       margin-bottom: 8px;
+      gap: 8px;
     }
 
     .progress-title {
@@ -88,6 +92,7 @@
       font-size: 1.4rem;
       font-weight: 800;
       color: var(--green);
+      flex-shrink: 0;
     }
 
     .progress-bar-bg {
@@ -147,8 +152,53 @@
       display: none;
     }
 
-    .panel-area.open {
+    .panel-area.open { display: block; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    .field-group label {
       display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--sub);
+      margin-bottom: 4px;
+    }
+
+    .text-input, .select-input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+    }
+
+    .tag-suggestions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .tag-suggest-btn {
+      background: var(--blue-light);
+      color: var(--blue);
+      border: none;
+      border-radius: 12px;
+      padding: 3px 9px;
+      font-size: 0.75rem;
+      cursor: pointer;
     }
 
     textarea {
@@ -175,12 +225,48 @@
       flex-wrap: wrap;
     }
 
+    /* 言語・タグフィルターバー */
+    .chip-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .chip {
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--sub);
+      padding: 5px 11px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .chip.lang-active {
+      background: var(--purple-light);
+      color: var(--purple);
+      border-color: var(--purple);
+      font-weight: 700;
+    }
+
+    .chip.tag-active {
+      background: var(--blue-light);
+      color: var(--blue);
+      border-color: var(--blue);
+      font-weight: 700;
+    }
+
     /* コントロールバー */
     .controls {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 12px;
+      margin: 4px 0 12px;
       align-items: center;
       justify-content: space-between;
     }
@@ -252,20 +338,25 @@
       flex-shrink: 0;
     }
 
-    .item-content { flex: 1; }
+    .item-content { flex: 1; min-width: 0; }
 
     .jp-text {
       font-size: 1rem;
       line-height: 1.45;
     }
 
-    .status-dot {
+    .meta-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+
+    .badge-sm {
       display: inline-block;
       font-size: 0.7rem;
-      padding: 1px 6px;
+      padding: 1px 7px;
       border-radius: 8px;
-      margin-left: 6px;
-      vertical-align: middle;
     }
 
     .status-review {
@@ -278,7 +369,18 @@
       color: var(--green);
     }
 
-    /* トグル表示される英語エリア */
+    .lang-badge {
+      background: var(--purple-light);
+      color: var(--purple);
+      font-weight: 600;
+    }
+
+    .tag-badge {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
+    /* トグル表示される外国語エリア */
     .en-panel {
       display: none;
       margin-top: 10px;
@@ -289,23 +391,30 @@
     .item.revealed .en-panel { display: block; }
 
     .en-text {
-      font-size: 1.05rem;
+      font-size: 1.08rem;
       font-weight: 600;
       color: #174ea6;
       margin-bottom: 10px;
-      line-height: 1.4;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .en-text.rtl {
+      direction: rtl;
+      text-align: right;
+      font-size: 1.2rem;
     }
 
     .en-actions {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
       align-items: center;
     }
 
     .btn-sm {
-      padding: 5px 11px;
-      font-size: 0.82rem;
+      padding: 5px 10px;
+      font-size: 0.8rem;
       border-radius: 6px;
       border: 1px solid var(--border);
       background: #fff;
@@ -323,6 +432,22 @@
       border-color: #81c995;
     }
     .btn-ok:hover { background: var(--green-light); }
+
+    .btn-tag-edit {
+      color: var(--blue);
+      border-color: #aecbfa;
+    }
+    .btn-tag-edit:hover { background: var(--blue-light); }
+
+    .lang-select-sm {
+      padding: 4px 6px;
+      font-size: 0.78rem;
+      border-radius: 6px;
+      border: 1px solid #d7aefb;
+      background: #fff;
+      color: var(--purple);
+      cursor: pointer;
+    }
 
     .btn-del {
       margin-left: auto;
@@ -345,7 +470,7 @@
 <body>
   <div class="container">
     <header>
-      <h1>Keep風 英語リコール帳</h1>
+      <h1>Keep風 多言語リコール帳</h1>
       <label class="auto-speak-label">
         <input type="checkbox" id="autoSpeak" checked /> チェック時に音声再生
       </label>
@@ -376,7 +501,18 @@
 
       <!-- 一括登録パネル -->
       <div class="panel-area" id="importArea">
-        <textarea id="bulkInput" placeholder="例：&#10;チェックアウトは正午まで延長できます / You can extend your check-out until noon.&#10;お荷物はいくつありますか？ / How many pieces of luggage do you have?"></textarea>
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="bulkLangSelect">言語</label>
+            <select id="bulkLangSelect" class="select-input"></select>
+          </div>
+          <div class="field-group">
+            <label for="bulkTagInput">タグ（ジャンル）※空欄OK</label>
+            <input type="text" id="bulkTagInput" class="text-input" placeholder="例：接客、英検、挨拶" />
+          </div>
+        </div>
+        <div class="tag-suggestions" id="tagSuggestions"></div>
+        <textarea id="bulkInput" placeholder="例：&#10;チェックアウトは正午まで延長できます / You can extend your check-out until noon.&#10;チェックインですか？ / Vous êtes ici pour l'enregistrement ?"></textarea>
         <div class="hint">
           ※1行につき1フレーズ。区切り文字は <strong>/</strong> ・ <strong>|</strong> ・ <strong>タブ</strong> に対応しています。
         </div>
@@ -386,7 +522,7 @@
       <!-- バックアップ管理パネル -->
       <div class="panel-area" id="backupArea">
         <div class="hint">
-          登録したフレーズと学習状況をファイル（JSON）としてスマホに保存・復元できます。定期的に保存しておくと安心です。
+          登録したフレーズ・言語・タグ・学習状況をファイル（JSON）として保存・復元できます。
         </div>
         <div class="backup-actions">
           <button class="btn btn-primary" id="exportBtn">📥 バックアップを保存</button>
@@ -396,7 +532,13 @@
       </div>
     </div>
 
-    <!-- フィルター＆操作 -->
+    <!-- 言語フィルターバー -->
+    <div class="chip-bar" id="langFilterBar"></div>
+
+    <!-- タグフィルターバー -->
+    <div class="chip-bar" id="tagFilterBar"></div>
+
+    <!-- ステータスフィルター＆操作 -->
     <div class="controls">
       <div class="tabs">
         <button class="btn active" data-filter="all">すべて</button>
@@ -416,18 +558,37 @@
   <script>
     const STORAGE_KEY = "keep_active_recall_v1";
 
+    const LANGUAGES = [
+      { code: "en-US", label: "英語", flag: "🇺🇸" },
+      { code: "zh-CN", label: "中国語", flag: "🇨🇳" },
+      { code: "ko-KR", label: "韓国語", flag: "🇰🇷" },
+      { code: "es-ES", label: "スペイン語", flag: "🇪🇸" },
+      { code: "fr-FR", label: "フランス語", flag: "🇫🇷" },
+      { code: "it-IT", label: "イタリア語", flag: "🇮🇹" },
+      { code: "ru-RU", label: "ロシア語", flag: "🇷🇺" },
+      { code: "de-DE", label: "ドイツ語", flag: "🇩🇪" },
+      { code: "pt-BR", label: "ポルトガル語", flag: "🇧🇷" },
+      { code: "ar-SA", label: "アラビア語", flag: "🇸🇦", rtl: true }
+    ];
+
+    const LANG_MAP = Object.fromEntries(LANGUAGES.map(l => [l.code, l]));
+
     const DEFAULT_ITEMS = [
       {
         id: crypto.randomUUID(),
         jp: "お荷物をフロントでお預かりしましょうか？",
         en: "Would you like us to store your luggage at the front desk?",
+        lang: "en-US",
+        tag: "接客",
         status: "review",
         revealed: false
       },
       {
         id: crypto.randomUUID(),
-        jp: "要点を先に言うと、スケジュール変更が必要です。",
-        en: "To get straight to the point, we need to reschedule.",
+        jp: "チェックインですか？",
+        en: "Vous êtes ici pour l'enregistrement ?",
+        lang: "fr-FR",
+        tag: "接客",
         status: "review",
         revealed: false
       },
@@ -435,12 +596,16 @@
         id: crypto.randomUUID(),
         jp: "それは一理ありますね。",
         en: "You have a point there.",
+        lang: "en-US",
+        tag: "会話",
         status: "mastered",
         revealed: false
       }
     ];
 
     let items = loadItems();
+    let currentLang = "ALL"; // "ALL" | 言語コード
+    let currentTag = "ALL";  // "ALL" | "__UNTAGGED__" | タグ名
     let currentFilter = "all";
 
     const listEl = document.getElementById("phraseList");
@@ -448,6 +613,11 @@
     const importArea = document.getElementById("importArea");
     const backupArea = document.getElementById("backupArea");
     const bulkInput = document.getElementById("bulkInput");
+    const bulkLangSelect = document.getElementById("bulkLangSelect");
+    const bulkTagInput = document.getElementById("bulkTagInput");
+    const tagSuggestionsEl = document.getElementById("tagSuggestions");
+    const langFilterBarEl = document.getElementById("langFilterBar");
+    const tagFilterBarEl = document.getElementById("tagFilterBar");
 
     const progressLabelEl = document.getElementById("progressLabel");
     const progressPercentEl = document.getElementById("progressPercent");
@@ -456,11 +626,28 @@
     const statReviewEl = document.getElementById("statReview");
     const statTotalEl = document.getElementById("statTotal");
 
+    // 言語プルダウン初期化
+    LANGUAGES.forEach(l => {
+      const opt = document.createElement("option");
+      opt.value = l.code;
+      opt.textContent = `${l.flag} ${l.label}`;
+      bulkLangSelect.appendChild(opt);
+    });
+
+    function getLangInfo(code) {
+      return LANG_MAP[code] || LANGUAGES[0];
+    }
+
     function loadItems() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return DEFAULT_ITEMS;
       try {
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        return parsed.map(i => ({
+          ...i,
+          lang: LANG_MAP[i.lang] ? i.lang : "en-US",
+          tag: (i.tag || "").trim()
+        }));
       } catch {
         return DEFAULT_ITEMS;
       }
@@ -470,20 +657,109 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     }
 
-    function speak(text) {
+    function speak(text, langCode) {
       if (!("speechSynthesis" in window)) return;
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = "en-US";
+      utter.lang = langCode || "en-US";
       utter.rate = 0.95;
       window.speechSynthesis.speak(utter);
     }
 
-    function updateProgress() {
-      const total = items.length;
-      const mastered = items.filter(i => i.status === "mastered").length;
+    function matchesCurrentLang(item) {
+      if (currentLang === "ALL") return true;
+      return item.lang === currentLang;
+    }
+
+    function matchesCurrentTag(item) {
+      const t = (item.tag || "").trim();
+      if (currentTag === "ALL") return true;
+      if (currentTag === "__UNTAGGED__") return t === "";
+      return t === currentTag;
+    }
+
+    function renderLangControls() {
+      const usedLangCodes = [...new Set(items.map(i => i.lang))];
+      const orderedLangs = LANGUAGES.filter(l => usedLangCodes.includes(l.code));
+
+      if (currentLang !== "ALL" && !usedLangCodes.includes(currentLang)) {
+        currentLang = "ALL";
+      }
+
+      langFilterBarEl.innerHTML = "";
+      if (orderedLangs.length === 0) return;
+
+      const addChip = (label, value) => {
+        const btn = document.createElement("button");
+        btn.className = `chip ${currentLang === value ? "lang-active" : ""}`;
+        btn.textContent = label;
+        btn.addEventListener("click", () => {
+          currentLang = value;
+          render();
+        });
+        langFilterBarEl.appendChild(btn);
+      };
+
+      addChip("🌐 全言語", "ALL");
+      orderedLangs.forEach(l => addChip(`${l.flag} ${l.label}`, l.code));
+    }
+
+    function renderTagControls(langScopedItems) {
+      const scopedTags = [...new Set(langScopedItems.map(i => (i.tag || "").trim()).filter(Boolean))];
+      const hasUntagged = langScopedItems.some(i => !(i.tag || "").trim());
+
+      if (currentTag !== "ALL" && currentTag !== "__UNTAGGED__" && !scopedTags.includes(currentTag)) {
+        currentTag = "ALL";
+      }
+      if (currentTag === "__UNTAGGED__" && !hasUntagged) {
+        currentTag = "ALL";
+      }
+
+      tagFilterBarEl.innerHTML = "";
+      if (scopedTags.length > 0) {
+        const addChip = (label, value) => {
+          const btn = document.createElement("button");
+          btn.className = `chip ${currentTag === value ? "tag-active" : ""}`;
+          btn.textContent = label;
+          btn.addEventListener("click", () => {
+            currentTag = value;
+            render();
+          });
+          tagFilterBarEl.appendChild(btn);
+        };
+
+        addChip("全タグ", "ALL");
+        scopedTags.forEach(tag => addChip(`# ${tag}`, tag));
+        if (hasUntagged) addChip("タグなし", "__UNTAGGED__");
+      }
+
+      // 一括登録用の既存タグ候補（全言語共通で使い回せるように全アイテムから取得）
+      const allTags = [...new Set(items.map(i => (i.tag || "").trim()).filter(Boolean))];
+      tagSuggestionsEl.innerHTML = "";
+      allTags.forEach(tag => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "tag-suggest-btn";
+        btn.textContent = `+ ${tag}`;
+        btn.addEventListener("click", () => {
+          bulkTagInput.value = tag;
+        });
+        tagSuggestionsEl.appendChild(btn);
+      });
+    }
+
+    function updateProgress(scopedItems) {
+      const total = scopedItems.length;
+      const mastered = scopedItems.filter(i => i.status === "mastered").length;
       const review = total - mastered;
       const percent = total === 0 ? 0 : Math.round((mastered / total) * 100);
+
+      const parts = [];
+      if (currentLang !== "ALL") parts.push(getLangInfo(currentLang).label);
+      if (currentTag === "__UNTAGGED__") parts.push("タグなし");
+      else if (currentTag !== "ALL") parts.push(`#${currentTag}`);
+
+      const scopeName = parts.length > 0 ? `「${parts.join(" × ")}」の` : "全体の";
 
       progressPercentEl.textContent = `${percent}%`;
       progressBarEl.style.width = `${percent}%`;
@@ -493,17 +769,22 @@
 
       if (total > 0 && percent === 100) {
         progressBarEl.classList.add("complete");
-        progressLabelEl.textContent = "🎉 全フレーズ マスター達成！";
+        progressLabelEl.textContent = `🎉 ${scopeName}フレーズをマスター達成！`;
       } else {
         progressBarEl.classList.remove("complete");
-        progressLabelEl.textContent = "マスター達成率";
+        progressLabelEl.textContent = `${scopeName}マスター達成率`;
       }
     }
 
     function render() {
-      updateProgress();
+      renderLangControls();
+      const langScoped = items.filter(matchesCurrentLang);
+      renderTagControls(langScoped);
 
-      const filtered = items.filter(item => {
+      const scoped = langScoped.filter(matchesCurrentTag);
+      updateProgress(scoped);
+
+      const filtered = scoped.filter(item => {
         if (currentFilter === "review") return item.status !== "mastered";
         if (currentFilter === "mastered") return item.status === "mastered";
         return true;
@@ -519,21 +800,33 @@
         const div = document.createElement("div");
         div.className = `item ${item.revealed ? "revealed" : ""}`;
 
-        const badge = item.status === "mastered"
-          ? `<span class="status-dot status-mastered">覚えた</span>`
-          : `<span class="status-dot status-review">要復習</span>`;
+        const langInfo = getLangInfo(item.lang);
+        const statusBadge = item.status === "mastered"
+          ? `<span class="badge-sm status-mastered">覚えた</span>`
+          : `<span class="badge-sm status-review">要復習</span>`;
+        const langBadge = `<span class="badge-sm lang-badge">${langInfo.flag} ${langInfo.label}</span>`;
+        const tagBadge = item.tag
+          ? `<span class="badge-sm tag-badge"># ${escapeHtml(item.tag)}</span>`
+          : "";
+
+        const langOptionsHtml = LANGUAGES.map(l =>
+          `<option value="${l.code}" ${l.code === item.lang ? "selected" : ""}>${l.flag} ${l.label}</option>`
+        ).join("");
 
         div.innerHTML = `
           <div class="item-main">
             <input type="checkbox" class="item-checkbox" ${item.revealed ? "checked" : ""} />
             <div class="item-content">
-              <div class="jp-text">${escapeHtml(item.jp)}${badge}</div>
+              <div class="jp-text">${escapeHtml(item.jp)}</div>
+              <div class="meta-badges">${langBadge}${statusBadge}${tagBadge}</div>
               <div class="en-panel">
-                <div class="en-text">${escapeHtml(item.en)}</div>
+                <div class="en-text ${langInfo.rtl ? "rtl" : ""}">${escapeHtml(item.en)}</div>
                 <div class="en-actions">
                   <button class="btn-sm btn-speak">🔊 発音</button>
                   <button class="btn-sm btn-again">もう一度</button>
                   <button class="btn-sm btn-ok">覚えた</button>
+                  <button class="btn-sm btn-tag-edit">🏷️ タグ</button>
+                  <select class="lang-select-sm" title="言語を変更">${langOptionsHtml}</select>
                   <button class="btn-del" title="削除">削除</button>
                 </div>
               </div>
@@ -550,7 +843,7 @@
           saveItems();
           render();
           if (item.revealed && autoSpeakEl.checked) {
-            speak(item.en);
+            speak(item.en, item.lang);
           }
         };
 
@@ -563,13 +856,13 @@
           saveItems();
           render();
           if (item.revealed && autoSpeakEl.checked) {
-            speak(item.en);
+            speak(item.en, item.lang);
           }
         });
 
         div.querySelector(".btn-speak").addEventListener("click", (e) => {
           e.stopPropagation();
-          speak(item.en);
+          speak(item.en, item.lang);
         });
 
         div.querySelector(".btn-again").addEventListener("click", (e) => {
@@ -584,6 +877,23 @@
           e.stopPropagation();
           item.status = "mastered";
           item.revealed = false;
+          saveItems();
+          render();
+        });
+
+        div.querySelector(".btn-tag-edit").addEventListener("click", (e) => {
+          e.stopPropagation();
+          const newTag = prompt("タグ名を入力してください（空欄でタグ解除）", item.tag || "");
+          if (newTag === null) return;
+          item.tag = newTag.trim();
+          saveItems();
+          render();
+        });
+
+        div.querySelector(".lang-select-sm").addEventListener("click", (e) => e.stopPropagation());
+        div.querySelector(".lang-select-sm").addEventListener("change", (e) => {
+          e.stopPropagation();
+          item.lang = e.target.value;
           saveItems();
           render();
         });
@@ -606,7 +916,7 @@
       }[m]));
     }
 
-    // パネル開閉（片方を開いたらもう片方を閉じる）
+    // パネル開閉
     document.getElementById("toggleImportBtn").addEventListener("click", () => {
       importArea.classList.toggle("open");
       backupArea.classList.remove("open");
@@ -620,6 +930,8 @@
     // コピペ一括登録
     document.getElementById("addBulkBtn").addEventListener("click", () => {
       const lines = bulkInput.value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const lang = bulkLangSelect.value;
+      const tag = bulkTagInput.value.trim();
       let added = 0;
 
       lines.forEach(line => {
@@ -632,6 +944,8 @@
               id: crypto.randomUUID(),
               jp,
               en,
+              lang,
+              tag,
               status: "review",
               revealed: false
             });
@@ -644,27 +958,29 @@
         saveItems();
         bulkInput.value = "";
         importArea.classList.remove("open");
+        currentLang = lang;
+        if (tag) currentTag = tag;
         render();
       } else {
-        alert("「日本語 / 英語」の形式で入力してください。");
+        alert("「日本語 / 外国語フレーズ」の形式で入力してください。");
       }
     });
 
-    // バックアップ保存（JSONダウンロード）
+    // バックアップ保存
     document.getElementById("exportBtn").addEventListener("click", () => {
       const today = new Date().toISOString().slice(0, 10);
       const blob = new Blob([JSON.stringify(items, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `english_keep_backup_${today}.json`;
+      a.download = `multilang_keep_backup_${today}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });
 
-    // バックアップ復元（JSON読み込み）
+    // バックアップ復元
     const importFileInput = document.getElementById("importFileInput");
     document.getElementById("importFileBtn").addEventListener("click", () => {
       importFileInput.click();
@@ -686,6 +1002,8 @@
               id: i.id || crypto.randomUUID(),
               jp: i.jp,
               en: i.en,
+              lang: LANG_MAP[i.lang] ? i.lang : "en-US",
+              tag: typeof i.tag === "string" ? i.tag.trim() : "",
               status: i.status === "mastered" ? "mastered" : "review",
               revealed: false
             }));
@@ -697,6 +1015,8 @@
 
           if (confirm(`${validItems.length}件のフレーズを復元しますか？（現在のリストは上書きされます）`)) {
             items = validItems;
+            currentLang = "ALL";
+            currentTag = "ALL";
             saveItems();
             backupArea.classList.remove("open");
             render();
@@ -711,7 +1031,7 @@
       reader.readAsText(file);
     });
 
-    // フィルター切り替え
+    // ステータスフィルター切り替え
     document.querySelectorAll(".tabs .btn").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".tabs .btn").forEach(b => b.classList.remove("active"));
