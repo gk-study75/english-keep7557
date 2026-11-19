@@ -14,6 +14,7 @@
       --accent: #fbbc04;
       --blue: #1a73e8;
       --green: #1e8e3e;
+      --green-light: #e6f4ea;
       --red: #d93025;
       --checked-bg: #fef7e0;
     }
@@ -43,48 +44,110 @@
     }
 
     h1 {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       margin: 0;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .badge {
-      background: var(--accent);
-      color: #202124;
-      font-size: 0.75rem;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-weight: 700;
+    .auto-speak-label {
+      font-size: 0.8rem;
+      color: var(--sub);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
     }
 
-    /* 一括登録カード */
+    /* カード共通 */
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 14px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
 
-    .import-toggle {
+    /* 習熟度ダッシュボード */
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .progress-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--sub);
+    }
+
+    .progress-percent {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 12px;
+      background: #e8eaed;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #34a853, #1e8e3e);
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+
+    .progress-bar-fill.complete {
+      background: linear-gradient(90deg, #fbbc04, #34a853);
+    }
+
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--sub);
+    }
+
+    .stat-mastered { color: var(--green); font-weight: 700; }
+    .stat-review { color: var(--red); font-weight: 700; }
+
+    /* 折りたたみメニュー（一括登録・データ管理） */
+    .tool-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-link {
       background: none;
       border: none;
       color: var(--blue);
       font-weight: 600;
       cursor: pointer;
-      padding: 0;
-      font-size: 0.95rem;
+      padding: 4px 0;
+      font-size: 0.9rem;
     }
 
-    .import-area {
-      margin-top: 10px;
+    .panel-area {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
       display: none;
     }
 
-    .import-area.open {
+    .panel-area.open {
       display: block;
     }
 
@@ -103,6 +166,13 @@
       font-size: 0.78rem;
       color: var(--sub);
       margin: 6px 0 10px;
+      line-height: 1.4;
+    }
+
+    .backup-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     /* コントロールバー */
@@ -115,10 +185,11 @@
       justify-content: space-between;
     }
 
-    .tabs {
+    .tabs, .actions {
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .btn {
@@ -146,22 +217,6 @@
       border-color: var(--blue);
     }
     .btn-primary:hover { background: #1557b0; }
-
-    .actions {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .auto-speak-label {
-      font-size: 0.8rem;
-      color: var(--sub);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-    }
 
     /* チェックリスト */
     .list {
@@ -197,9 +252,7 @@
       flex-shrink: 0;
     }
 
-    .item-content {
-      flex: 1;
-    }
+    .item-content { flex: 1; }
 
     .jp-text {
       font-size: 1rem;
@@ -221,7 +274,7 @@
     }
 
     .status-mastered {
-      background: #e6f4ea;
+      background: var(--green-light);
       color: var(--green);
     }
 
@@ -233,9 +286,7 @@
       border-top: 1px dashed #d6c58b;
     }
 
-    .item.revealed .en-panel {
-      display: block;
-    }
+    .item.revealed .en-panel { display: block; }
 
     .en-text {
       font-size: 1.05rem;
@@ -253,8 +304,8 @@
     }
 
     .btn-sm {
-      padding: 4px 10px;
-      font-size: 0.8rem;
+      padding: 5px 11px;
+      font-size: 0.82rem;
       border-radius: 6px;
       border: 1px solid var(--border);
       background: #fff;
@@ -271,7 +322,7 @@
       color: var(--green);
       border-color: #81c995;
     }
-    .btn-ok:hover { background: #e6f4ea; }
+    .btn-ok:hover { background: var(--green-light); }
 
     .btn-del {
       margin-left: auto;
@@ -294,21 +345,54 @@
 <body>
   <div class="container">
     <header>
-      <h1>Keep風 英語リコール帳 <span class="badge" id="counter">0件</span></h1>
+      <h1>Keep風 英語リコール帳</h1>
       <label class="auto-speak-label">
         <input type="checkbox" id="autoSpeak" checked /> チェック時に音声再生
       </label>
     </header>
 
-    <!-- コピペ一括登録 -->
+    <!-- 習熟度ビジュアルダッシュボード -->
     <div class="card">
-      <button class="import-toggle" id="toggleImportBtn">＋ Keepメモからコピペ一括登録</button>
-      <div class="import-area" id="importArea">
+      <div class="progress-header">
+        <span class="progress-title" id="progressLabel">マスター達成率</span>
+        <span class="progress-percent" id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+      <div class="progress-stats">
+        <span>覚えた: <span class="stat-mastered" id="statMastered">0</span>件</span>
+        <span>要復習: <span class="stat-review" id="statReview">0</span>件</span>
+        <span>合計: <strong id="statTotal">0</strong>件</span>
+      </div>
+    </div>
+
+    <!-- 一括登録 ＆ バックアップ管理 -->
+    <div class="card">
+      <div class="tool-row">
+        <button class="toggle-link" id="toggleImportBtn">＋ フレーズ一括登録</button>
+        <button class="toggle-link" id="toggleBackupBtn">💾 バックアップ・復元</button>
+      </div>
+
+      <!-- 一括登録パネル -->
+      <div class="panel-area" id="importArea">
         <textarea id="bulkInput" placeholder="例：&#10;チェックアウトは正午まで延長できます / You can extend your check-out until noon.&#10;お荷物はいくつありますか？ / How many pieces of luggage do you have?"></textarea>
         <div class="hint">
           ※1行につき1フレーズ。区切り文字は <strong>/</strong> ・ <strong>|</strong> ・ <strong>タブ</strong> に対応しています。
         </div>
         <button class="btn btn-primary" id="addBulkBtn">リストに追加</button>
+      </div>
+
+      <!-- バックアップ管理パネル -->
+      <div class="panel-area" id="backupArea">
+        <div class="hint">
+          登録したフレーズと学習状況をファイル（JSON）としてスマホに保存・復元できます。定期的に保存しておくと安心です。
+        </div>
+        <div class="backup-actions">
+          <button class="btn btn-primary" id="exportBtn">📥 バックアップを保存</button>
+          <button class="btn" id="importFileBtn">📤 ファイルから復元</button>
+          <input type="file" id="importFileInput" accept=".json,application/json" style="display:none;" />
+        </div>
       </div>
     </div>
 
@@ -332,13 +416,12 @@
   <script>
     const STORAGE_KEY = "keep_active_recall_v1";
 
-    // 初回起動用のサンプルデータ
     const DEFAULT_ITEMS = [
       {
         id: crypto.randomUUID(),
         jp: "お荷物をフロントでお預かりしましょうか？",
         en: "Would you like us to store your luggage at the front desk?",
-        status: "review", // "review" | "mastered"
+        status: "review",
         revealed: false
       },
       {
@@ -361,10 +444,17 @@
     let currentFilter = "all";
 
     const listEl = document.getElementById("phraseList");
-    const counterEl = document.getElementById("counter");
     const autoSpeakEl = document.getElementById("autoSpeak");
     const importArea = document.getElementById("importArea");
+    const backupArea = document.getElementById("backupArea");
     const bulkInput = document.getElementById("bulkInput");
+
+    const progressLabelEl = document.getElementById("progressLabel");
+    const progressPercentEl = document.getElementById("progressPercent");
+    const progressBarEl = document.getElementById("progressBar");
+    const statMasteredEl = document.getElementById("statMastered");
+    const statReviewEl = document.getElementById("statReview");
+    const statTotalEl = document.getElementById("statTotal");
 
     function loadItems() {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -380,7 +470,6 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     }
 
-    // 英語音声の読み上げ（Web Speech API）
     function speak(text) {
       if (!("speechSynthesis" in window)) return;
       window.speechSynthesis.cancel();
@@ -390,15 +479,35 @@
       window.speechSynthesis.speak(utter);
     }
 
+    function updateProgress() {
+      const total = items.length;
+      const mastered = items.filter(i => i.status === "mastered").length;
+      const review = total - mastered;
+      const percent = total === 0 ? 0 : Math.round((mastered / total) * 100);
+
+      progressPercentEl.textContent = `${percent}%`;
+      progressBarEl.style.width = `${percent}%`;
+      statMasteredEl.textContent = mastered;
+      statReviewEl.textContent = review;
+      statTotalEl.textContent = total;
+
+      if (total > 0 && percent === 100) {
+        progressBarEl.classList.add("complete");
+        progressLabelEl.textContent = "🎉 全フレーズ マスター達成！";
+      } else {
+        progressBarEl.classList.remove("complete");
+        progressLabelEl.textContent = "マスター達成率";
+      }
+    }
+
     function render() {
+      updateProgress();
+
       const filtered = items.filter(item => {
         if (currentFilter === "review") return item.status !== "mastered";
         if (currentFilter === "mastered") return item.status === "mastered";
         return true;
       });
-
-      const reviewCount = items.filter(i => i.status !== "mastered").length;
-      counterEl.textContent = `要復習 ${reviewCount} / 全${items.length}件`;
 
       if (filtered.length === 0) {
         listEl.innerHTML = `<div class="empty">該当するフレーズがありません。</div>`;
@@ -432,7 +541,6 @@
           </div>
         `;
 
-        // 行またはチェックボックスでトグル
         const checkbox = div.querySelector(".item-checkbox");
         const mainArea = div.querySelector(".item-main");
 
@@ -459,7 +567,6 @@
           }
         });
 
-        // 各種ボタン
         div.querySelector(".btn-speak").addEventListener("click", (e) => {
           e.stopPropagation();
           speak(item.en);
@@ -468,7 +575,7 @@
         div.querySelector(".btn-again").addEventListener("click", (e) => {
           e.stopPropagation();
           item.status = "review";
-          item.revealed = false; // すぐ閉じて次の復習に備える
+          item.revealed = false;
           saveItems();
           render();
         });
@@ -499,17 +606,23 @@
       }[m]));
     }
 
-    // コピペ一括登録
+    // パネル開閉（片方を開いたらもう片方を閉じる）
     document.getElementById("toggleImportBtn").addEventListener("click", () => {
       importArea.classList.toggle("open");
+      backupArea.classList.remove("open");
     });
 
+    document.getElementById("toggleBackupBtn").addEventListener("click", () => {
+      backupArea.classList.toggle("open");
+      importArea.classList.remove("open");
+    });
+
+    // コピペ一括登録
     document.getElementById("addBulkBtn").addEventListener("click", () => {
       const lines = bulkInput.value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
       let added = 0;
 
       lines.forEach(line => {
-        // タブ、スラッシュ、パイプのいずれかで分割
         const parts = line.split(/\t|\s*\/\s*|\s*\|\s*/);
         if (parts.length >= 2) {
           const jp = parts[0].trim();
@@ -537,6 +650,67 @@
       }
     });
 
+    // バックアップ保存（JSONダウンロード）
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const blob = new Blob([JSON.stringify(items, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `english_keep_backup_${today}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // バックアップ復元（JSON読み込み）
+    const importFileInput = document.getElementById("importFileInput");
+    document.getElementById("importFileBtn").addEventListener("click", () => {
+      importFileInput.click();
+    });
+
+    importFileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+          if (!Array.isArray(parsed)) throw new Error("形式エラー");
+
+          const validItems = parsed
+            .filter(i => i && typeof i.jp === "string" && typeof i.en === "string")
+            .map(i => ({
+              id: i.id || crypto.randomUUID(),
+              jp: i.jp,
+              en: i.en,
+              status: i.status === "mastered" ? "mastered" : "review",
+              revealed: false
+            }));
+
+          if (validItems.length === 0) {
+            alert("有効なフレーズデータが見つかりませんでした。");
+            return;
+          }
+
+          if (confirm(`${validItems.length}件のフレーズを復元しますか？（現在のリストは上書きされます）`)) {
+            items = validItems;
+            saveItems();
+            backupArea.classList.remove("open");
+            render();
+            alert("復元が完了しました！");
+          }
+        } catch {
+          alert("ファイルの読み込みに失敗しました。バックアップ用のJSONファイルを選んでください。");
+        } finally {
+          importFileInput.value = "";
+        }
+      };
+      reader.readAsText(file);
+    });
+
     // フィルター切り替え
     document.querySelectorAll(".tabs .btn").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -557,7 +731,7 @@
       render();
     });
 
-    // チェック全解除（すべて隠す）
+    // チェック全解除
     document.getElementById("resetChecksBtn").addEventListener("click", () => {
       items.forEach(i => i.revealed = false);
       saveItems();
