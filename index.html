@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keep風 多言語リコール帳</title>
+  <style>
+    :root {
+      --bg: #f1f3f4;
+      --card: #ffffff;
+      --text: #202124;
+      --sub: #5f6368;
+      --border: #e0e0e0;
+      --accent: #fbbc04;
+      --blue: #1a73e8;
+      --blue-light: #e8f0fe;
+      --purple: #7627bb;
+      --purple-light: #f3e8fd;
+      --green: #1e8e3e;
+      --green-light: #e6f4ea;
+      --pink: #e91e63;
+      --pink-light: #fce4ec;
+      --red: #d93025;
+      --checked-bg: #fef7e0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    h1 {
+      font-size: 1.2rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .auto-speak-label {
+      font-size: 0.8rem;
+      color: var(--sub);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    /* カード共通 */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    /* キャラ応援カード */
+    .char-card {
+      background: linear-gradient(135deg, #ffffff 0%, #fff8fb 100%);
+      border-color: #f8bbd0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .char-layout {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .char-avatar-wrap {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      flex-shrink: 0;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .char-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #f48fb1;
+      background: #fce4ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.6rem;
+      box-shadow: 0 4px 10px rgba(233, 30, 99, 0.16);
+      animation: charBreathe 3.2s ease-in-out infinite;
+      transform-origin: bottom center;
+    }
+
+    .char-avatar.anim-jump {
+      animation: charJump 0.55s cubic-bezier(0.28, 0.84, 0.42, 1) !important;
+    }
+
+    .char-avatar.anim-nod {
+      animation: charNod 0.5s ease-in-out !important;
+    }
+
+    .char-avatar.anim-squish {
+      animation: charSquish 0.45s ease !important;
+    }
+
+    @keyframes charBreathe {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-4px) scale(1.02); }
+    }
+
+    @keyframes charJump {
+      0% { transform: translateY(0) scale(1, 1); }
+      20% { transform: translateY(3px) scale(1.08, 0.92); }
+      50% { transform: translateY(-16px) scale(0.95, 1.06); }
+      75% { transform: translateY(2px) scale(1.04, 0.96); }
+      100% { transform: translateY(0) scale(1, 1); }
+    }
+
+    @keyframes charNod {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      30% { transform: rotate(-6deg) translateY(3px); }
+      65% { transform: rotate(5deg) translateY(-1px); }
+    }
+
+    @keyframes charSquish {
+      0% { transform: scale(1, 1); }
+      30% { transform: scale(1.14, 0.86); }
+      60% { transform: scale(0.92, 1.08); }
+      100% { transform: scale(1, 1); }
+    }
+
+    .sparkle {
+      position: absolute;
+      pointer-events: none;
+      font-size: 1.1rem;
+      animation: sparkleFloat 0.85s ease-out forwards;
+      z-index: 5;
+    }
+
+    @keyframes sparkleFloat {
+      0% { opacity: 1; transform: translate(0, 0) scale(0.6); }
+      100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1.25); }
+    }
+
+    .char-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .char-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 6px;
+    }
+
+    .char-name-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .char-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--pink);
+    }
+
+    .combo-badge {
+      display: none;
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #ff9800, #e91e63);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 999px;
+      animation: comboPop 0.3s ease;
+    }
+
+    .combo-badge.show { display: inline-block; }
+
+    @keyframes comboPop {
+      0% { transform: scale(0.6); }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .char-config-btn {
+      background: none;
+      border: 1px solid #f48fb1;
+      color: var(--pink);
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+
+    .char-bubble {
+      position: relative;
+      background: #fff;
+      border: 1px solid #f8bbd0;
+      border-radius: 12px;
+      padding: 9px 12px;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: var(--text);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .char-bubble::before {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 16px;
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border-left: 1px solid #f8bbd0;
+      border-bottom: 1px solid #f8bbd0;
+      transform: rotate(45deg);
+    }
+
+    /* キャラ設定パネル */
+    .char-settings {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed #f48fb1;
+    }
+
+    .char-settings.open { display: block; }
+
+    .img-slots {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 8px 0;
+    }
+
+    .img-slot {
+      border: 1px dashed #f48fb1;
+      border-radius: 8px;
+      padding: 8px 6px;
+      text-align: center;
+      background: #fff;
+    }
+
+    .img-slot-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--sub);
+      margin-bottom: 4px;
+    }
+
+    .img-slot-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #fce4ec;
+      margin: 0 auto 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .img-slot-btn {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #f8f9fa;
+      cursor: pointer;
+    }
+
+    /* 紙吹雪 */
+    .confetti-piece {
+      position: fixed;
+      top: -12px;
+      width: 10px;
+      height: 14px;
+      z-index: 9999;
+      pointer-events: none;
+      border-radius: 2px;
+      animation: confettiFall var(--dur) linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      85% { opacity: 1; }
+      100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* 習熟度ダッシュボード */
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .progress-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--sub);
+    }
+
+    .progress-percent {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--green);
+      flex-shrink: 0;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 12px;
+      background: #e8eaed;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #34a853, #1e8e3e);
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+
+    .progress-bar-fill.complete {
+      background: linear-gradient(90deg, #fbbc04, #34a853);
+    }
+
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--sub);
+    }
+
+    .stat-mastered { color: var(--green); font-weight: 700; }
+    .stat-review { color: var(--red); font-weight: 700; }
+
+    /* 折りたたみメニュー */
+    .tool-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-link {
+      background: none;
+      border: none;
+      color: var(--blue);
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 0;
+      font-size: 0.9rem;
+    }
+
+    .panel-area {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+
+    .panel-area.open { display: block; }
+
+    /* 登録モード切替タブ */
+    .mode-switch {
+      display: flex;
+      background: #f1f3f4;
+      border-radius: 8px;
+      padding: 3px;
+      margin-bottom: 12px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--sub);
+      cursor: pointer;
+    }
+
+    .mode-btn.active {
+      background: #fff;
+      color: var(--blue);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    .field-group { margin-bottom: 8px; }
+
+    .field-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--sub);
+      margin-bottom: 4px;
+    }
+
+    .text-input, .select-input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+    }
+
+    .tag-suggestions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .tag-suggest-btn {
+      background: var(--blue-light);
+      color: var(--blue);
+      border: none;
+      border-radius: 12px;
+      padding: 3px 9px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    /* 一括登録オプション */
+    .bulk-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .opt-check {
+      font-size: 0.8rem;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #f8f9fa;
+      border: 1px solid var(--border);
+      padding: 4px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    textarea {
+      width: 100%;
+      height: 115px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .preview-box {
+      background: #f8f9fa;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin: 8px 0 10px;
+      font-size: 0.8rem;
+      display: none;
+    }
+
+    .preview-box.show { display: block; }
+
+    .preview-summary {
+      font-weight: 700;
+      color: var(--blue);
+      margin-bottom: 4px;
+    }
+
+    .preview-skip {
+      color: var(--sub);
+      font-weight: 400;
+      margin-left: 6px;
+    }
+
+    .preview-list {
+      margin: 0;
+      padding-left: 16px;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .preview-en { color: #174ea6; font-weight: 600; }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--sub);
+      margin: 6px 0 10px;
+      line-height: 1.4;
+    }
+
+    .backup-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* 言語・タグフィルターバー */
+    .chip-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .chip {
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--sub);
+      padding: 5px 11px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .chip.lang-active {
+      background: var(--purple-light);
+      color: var(--purple);
+      border-color: var(--purple);
+      font-weight: 700;
+    }
+
+    .chip.tag-active {
+      background: var(--blue-light);
+      color: var(--blue);
+      border-color: var(--blue);
+      font-weight: 700;
+    }
+
+    /* コントロールバー */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 4px 0 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tabs, .actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 18px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn:hover { background: #e8eaed; }
+
+    .btn.active {
+      background: #feefc3;
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+    .btn-primary:hover { background: #1557b0; }
+
+    .btn-paste {
+      background: var(--blue-light);
+      color: var(--blue);
+      border: 1px solid #aecbfa;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* チェックリスト */
+    .list {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .item {
+      border-bottom: 1px solid var(--border);
+      padding: 12px 14px;
+      transition: background 0.15s;
+    }
+
+    .item:last-child { border-bottom: none; }
+    .item.revealed { background: var(--checked-bg); }
+
+    .item-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .item-checkbox {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      cursor: pointer;
+      accent-color: var(--blue);
+      flex-shrink: 0;
+    }
+
+    .item-content { flex: 1; min-width: 0; }
+
+    .jp-text {
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+
+    .meta-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+
+    .badge-sm {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 1px 7px;
+      border-radius: 8px;
+    }
+
+    .status-review {
+      background: #fce8e6;
+      color: var(--red);
+    }
+
+    .status-mastered {
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .lang-badge {
+      background: var(--purple-light);
+      color: var(--purple);
+      font-weight: 600;
+    }
+
+    .tag-badge {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
+    /* トグル表示される外国語エリア */
+    .en-panel {
+      display: none;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #d6c58b;
+    }
+
+    .item.revealed .en-panel { display: block; }
+
+    .en-text {
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: #174ea6;
+      margin-bottom: 10px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .en-text.rtl {
+      direction: rtl;
+      text-align: right;
+      font-size: 1.2rem;
+    }
+
+    .en-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .btn-again {
+      color: var(--red);
+      border-color: #f28b82;
+    }
+    .btn-again:hover { background: #fce8e6; }
+
+    .btn-ok {
+      color: var(--green);
+      border-color: #81c995;
+    }
+    .btn-ok:hover { background: var(--green-light); }
+
+    .btn-tag-edit {
+      color: var(--blue);
+      border-color: #aecbfa;
+    }
+    .btn-tag-edit:hover { background: var(--blue-light); }
+
+    .lang-select-sm {
+      padding: 4px 6px;
+      font-size: 0.78rem;
+      border-radius: 6px;
+      border: 1px solid #d7aefb;
+      background: #fff;
+      color: var(--purple);
+      cursor: pointer;
+    }
+
+    .btn-del {
+      margin-left: auto;
+      color: var(--sub);
+      border: none;
+      background: transparent;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .btn-del:hover { color: var(--red); }
+
+    .empty {
+      text-align: center;
+      color: var(--sub);
+      padding: 32px 16px;
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Keep風 多言語リコール帳</h1>
+      <label class="auto-speak-label">
+        <input type="checkbox" id="autoSpeak" checked /> チェック時に音声再生
+      </label>
+    </header>
+
+    <!-- キャラ応援カード -->
+    <div class="card char-card">
+      <div class="char-layout">
+        <div class="char-avatar-wrap" id="charAvatarWrap" title="タップで応援！">
+          <div class="char-avatar" id="charAvatar">✨</div>
+        </div>
+        <div class="char-body">
+          <div class="char-header">
+            <div class="char-name-wrap">
+              <span class="char-name" id="charNameDisplay">応援パートナー</span>
+              <span class="combo-badge" id="comboBadge">🔥 0連続</span>
+            </div>
+            <button type="button" class="char-config-btn" id="toggleCharConfigBtn">⚙️ キャラ設定</button>
+          </div>
+          <div class="char-bubble" id="charMessage">今日も一緒に頑張ろうね！画像を設定すると私が応援するよ♪</div>
+        </div>
+      </div>
+
+      <!-- キャラ設定パネル -->
+      <div class="char-settings" id="charSettings">
+        <div class="form-grid">
+          <div class="field-group" style="margin-bottom:0;">
+            <label for="charNameInput">キャラの名前</label>
+            <input type="text" id="charNameInput" class="text-input" placeholder="例：ミナ、応援パートナー" />
+          </div>
+          <div class="field-group" style="margin-bottom:0;">
+            <label for="charPersonaSelect">性格・口調</label>
+            <select id="charPersonaSelect" class="select-input">
+              <option value="gentle">🌸 優しいお姉さん系</option>
+              <option value="energetic">⚡ 元気な後輩系</option>
+              <option value="tsundere">💢 ちょっとツンデレ系</option>
+              <option value="cool">❄️ クールだけど褒める系</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="hint" style="margin-bottom:4px;">
+          キャラ画像をスマホから選択できます（「通常」1枚だけでもOK！表情差分を入れると反応で切り替わります）
+        </div>
+        <div class="img-slots">
+          <div class="img-slot">
+            <div class="img-slot-label">通常（必須）</div>
+            <div class="img-slot-thumb" id="thumbNormal">😊</div>
+            <button type="button" class="img-slot-btn" data-slot="normal">画像を選ぶ</button>
+          </div>
+          <div class="img-slot">
+            <div class="img-slot-label">喜び（任意）</div>
+            <div class="img-slot-thumb" id="thumbHappy">😆</div>
+            <button type="button" class="img-slot-btn" data-slot="happy">画像を選ぶ</button>
+          </div>
+          <div class="img-slot">
+            <div class="img-slot-label">応援（任意）</div>
+            <div class="img-slot-thumb" id="thumbCheer">💪</div>
+            <button type="button" class="img-slot-btn" data-slot="cheer">画像を選ぶ</button>
+          </div>
+        </div>
+        <input type="file" id="charImgFileInput" accept="image/*" style="display:none;" />
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+          <button type="button" class="btn-del" id="clearCharImgsBtn" style="margin-left:0;">画像をリセット</button>
+          <button type="button" class="btn btn-primary" id="closeCharConfigBtn" style="padding:4px 14px; font-size:0.8rem;">閉じる</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 習熟度ビジュアルダッシュボード -->
+    <div class="card">
+      <div class="progress-header">
+        <span class="progress-title" id="progressLabel">マスター達成率</span>
+        <span class="progress-percent" id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+      <div class="progress-stats">
+        <span>覚えた: <span class="stat-mastered" id="statMastered">0</span>件</span>
+        <span>要復習: <span class="stat-review" id="statReview">0</span>件</span>
+        <span>合計: <strong id="statTotal">0</strong>件</span>
+      </div>
+    </div>
+
+    <!-- 登録 ＆ バックアップ管理 -->
+    <div class="card">
+      <div class="tool-row">
+        <button class="toggle-link" id="toggleImportBtn">＋ フレーズを追加</button>
+        <button class="toggle-link" id="toggleBackupBtn">💾 バックアップ・復元</button>
+      </div>
+
+      <!-- 登録パネル -->
+      <div class="panel-area" id="importArea">
+        <div class="mode-switch">
+          <button type="button" class="mode-btn active" data-mode="bulk">📋 コピペ一括登録</button>
+          <button type="button" class="mode-btn" data-mode="single">✏️ 1件クイック追加</button>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group" style="margin-bottom:0;">
+            <label for="bulkLangSelect">言語</label>
+            <select id="bulkLangSelect" class="select-input"></select>
+          </div>
+          <div class="field-group" style="margin-bottom:0;">
+            <label for="bulkTagInput">タグ（ジャンル）※空欄OK</label>
+            <input type="text" id="bulkTagInput" class="text-input" placeholder="例：接客、英検、挨拶" />
+          </div>
+        </div>
+        <div class="tag-suggestions" id="tagSuggestions"></div>
+
+        <!-- 一括登録 -->
+        <div id="bulkModeArea">
+          <div class="bulk-toolbar">
+            <button type="button" class="btn-paste" id="pasteClipboardBtn">📋 貼り付け</button>
+            <label class="opt-check">
+              <input type="checkbox" id="twoLineMode" /> 2行セット（日→改行→外）
+            </label>
+            <label class="opt-check">
+              <input type="checkbox" id="swapOrderMode" /> 日⇔外を入替
+            </label>
+          </div>
+          <textarea id="bulkInput" placeholder="KeepやAIの出力をそのまま貼り付けられます。&#10;例：&#10;1. お荷物はいくつですか？ / How many pieces of luggage do you have?&#10;・チェックインですか？ : Vous êtes ici pour l'enregistrement ?"></textarea>
+          <div class="preview-box" id="previewBox">
+            <div class="preview-summary" id="previewSummary"></div>
+            <ul class="preview-list" id="previewList"></ul>
+          </div>
+          <div class="hint">
+            ※行頭の番号・箇条書き・☐は自動削除。区切り文字は <strong>/ ／ | : ： → = タブ</strong> に対応。
+          </div>
+          <button class="btn btn-primary" id="addBulkBtn">リストに追加</button>
+        </div>
+
+        <!-- 1件クイック追加 -->
+        <div id="singleModeArea" style="display:none;">
+          <div class="field-group">
+            <label for="singleJpInput">日本語（問題）</label>
+            <input type="text" id="singleJpInput" class="text-input" placeholder="例：チェックアウトを延長できますか？" />
+          </div>
+          <div class="field-group">
+            <label for="singleEnInput">外国語（答え）</label>
+            <input type="text" id="singleEnInput" class="text-input" placeholder="例：Can I extend my check-out?" />
+          </div>
+          <button class="btn btn-primary" id="addSingleBtn">1件追加する</button>
+        </div>
+      </div>
+
+      <!-- バックアップ管理パネル -->
+      <div class="panel-area" id="backupArea">
+        <div class="hint">
+          登録したフレーズ・言語・タグ・学習状況をファイル（JSON）として保存・復元できます。
+        </div>
+        <div class="backup-actions">
+          <button class="btn btn-primary" id="exportBtn">📥 バックアップを保存</button>
+          <button class="btn" id="importFileBtn">📤 ファイルから復元</button>
+          <input type="file" id="importFileInput" accept=".json,application/json" style="display:none;" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 言語フィルターバー -->
+    <div class="chip-bar" id="langFilterBar"></div>
+
+    <!-- タグフィルターバー -->
+    <div class="chip-bar" id="tagFilterBar"></div>
+
+    <!-- ステータスフィルター＆操作 -->
+    <div class="controls">
+      <div class="tabs">
+        <button class="btn active" data-filter="all">すべて</button>
+        <button class="btn" data-filter="review">もう一度・未習得</button>
+        <button class="btn" data-filter="mastered">覚えた</button>
+      </div>
+      <div class="actions">
+        <button class="btn" id="shuffleBtn">シャッフル</button>
+        <button class="btn" id="resetChecksBtn">チェック全解除</button>
+      </div>
+    </div>
+
+    <!-- リスト本体 -->
+    <div class="list" id="phraseList"></div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "keep_active_recall_v1";
+    const CHAR_STORAGE_KEY = "keep_active_recall_char_v1";
+
+    const LANGUAGES = [
+      { code: "en-US", label: "英語", flag: "🇺🇸" },
+      { code: "zh-CN", label: "中国語", flag: "🇨🇳" },
+      { code: "ko-KR", label: "韓国語", flag: "🇰🇷" },
+      { code: "es-ES", label: "スペイン語", flag: "🇪🇸" },
+      { code: "fr-FR", label: "フランス語", flag: "🇫🇷" },
+      { code: "it-IT", label: "イタリア語", flag: "🇮🇹" },
+      { code: "ru-RU", label: "ロシア語", flag: "🇷🇺" },
+      { code: "de-DE", label: "ドイツ語", flag: "🇩🇪" },
+      { code: "pt-BR", label: "ポルトガル語", flag: "🇧🇷" },
+      { code: "ar-SA", label: "アラビア語", flag: "🇸🇦", rtl: true }
+    ];
+
+    const LANG_MAP = Object.fromEntries(LANGUAGES.map(l => [l.code, l]));
+
+    // 性格別セリフ集
+    const PERSONAS = {
+      gentle: {
+        greet: ["おかえりなさい！今日も自分のペースで進めようね🌸", "来てくれて嬉しいな。1フレーズだけでも立派な前進だよ✨", "今日もコツコツ積み上げていこうね！応援してるよ♪"],
+        ok: ["すごい！完璧に覚えられたね✨", "さすが！ちゃんと身についてるよ🌸", "その調子！どんどん成長してるね♪", "バッチリ！発音もイメージできたかな？"],
+        combo: ["すごい集中力！{n}連続マスターだよ✨", "絶好調だね！{n}連続クリア、本当に尊敬しちゃう🌸", "{n}連続達成！この勢いでどんどん行こう♪"],
+        again: ["大丈夫、思い出す練習が一番記憶に残るんだよ🌸", "惜しい！次に出会ったときはきっと言えるよ✨", "焦らなくて大丈夫。何回でも一緒に付き合うからね♪"],
+        add: ["新しいフレーズを{n}件追加したんだね！一緒に覚えよう✨", "{n}件も登録お疲れさま！少しずつマスターしていこうね🌸"],
+        tap: ["無理しすぎないで、息抜きもしてね🌸", "いつも頑張ってるの、ちゃんと見てるよ✨", "コツコツ続けられるのって本当にすごい才能だよ♪", "ちょっと疲れたら深呼吸してね。応援してるよ！"],
+        complete: ["🎉 全フレーズマスター達成おめでとう！！本当にすごいよ、最高のご褒美をあげたいな✨"]
+      },
+      energetic: {
+        greet: ["待ってましたー！今日もバリバリ覚えちゃいましょ！⚡", "お疲れさまです！まずは1問、サクッと行きましょー！", "おおっ、今日も勉強えらいですっ！全力で応援しますね🔥"],
+        ok: ["ナイスですっ！完璧じゃないですかー！✨", "おおーっ！さすがです、一瞬で覚えちゃいましたね！", "バッチリ決まりましたね！その調子ですー！😆", "すごーい！どんどんマスター増やしましょ！"],
+        combo: ["やばいっ！{n}連続マスターですって！？天才ですか！？🔥", "絶好調すぎますー！{n}連続クリア、止まりませんね！⚡", "{n}連続達成！めっちゃカッコいいですっ✨"],
+        again: ["どんまいです！今の悔しさが次につながるんですよー！💪", "あとちょっと！もう1周したら絶対覚えられますよ！", "大丈夫大丈夫！忘れるのも勉強のうちですっ✨"],
+        add: ["おおっ、{n}件も新しいフレーズ！やる気満々ですねー！🔥", "{n}件追加完了！全部やっつけちゃいましょー！"],
+        tap: ["えへへ、呼んでくれました？今日も応援してますよ！✨", "水分とってます？休憩も大事ですよー！", "毎日ちょっとずつでも続けてるの、ほんと尊敬しますっ！", "よっしゃー！もう1フレーズだけ頑張りましょ！💪"],
+        complete: ["🎉 うわあああ！100%完全制覇おめでとうございますっ！！最高すぎますー！！🎊"]
+      },
+      tsundere: {
+        greet: ["べ、別にあんたを待ってたわけじゃないんだからね！…ほら、早く始めるわよ。", "ちゃんと来たのね。まあ、サボらないのは偉いんじゃない？", "今日も勉強？ふーん、少しは見直してあげてもいいわよ。"],
+        ok: ["な、何よ、ちゃんと覚えてるじゃない…ちょっと見直したわ✨", "ふふん、まあこれくらいできて当然よね！…すごいけど。", "完璧じゃない。…べ、別に褒めてるわけじゃないんだからね！", "やるじゃない。あんたにしては上出来よ♪"],
+        combo: ["ちょ、ちょっと！{n}連続って本気出しすぎじゃない！？…すごいけど！🔥", "{n}連続クリア！？な、何よ急にカッコいいじゃない…！", "ま、また正解！？{n}連続とか、あんた実は天才なの？"],
+        again: ["ほら、だから復習が大事って言ったでしょ！次は絶対に覚えてよね！", "べ、別に責めてるわけじゃないわよ。もう一回やればいいだけでしょ！", "悔しかったら次で一発で当てなさいよね！応援くらいはしてあげるから。"],
+        add: ["{n}件も追加して、ちゃんと全部覚えるんでしょうね？付き合ってあげるけど。", "新しいフレーズが{n}件ね。ふーん、まあ頑張りなさいよ。"],
+        tap: ["な、何タップしてるのよ！集中しなさい！", "無理して倒れたりしないでよね…心配するわけじゃないけど！", "あんたが頑張ってるの、ちょっとくらいは認めてあげてもいいわよ。", "たまには休みなさいよね。効率落ちるでしょ？"],
+        complete: ["🎉 全問マスターですって！？…ほ、本当におめでとう。あんた、最高にカッコいいわよ✨"]
+      },
+      cool: {
+        greet: ["来たな。今日も淡々と、確実に積み上げていこう。", "準備はいいか？少しの時間でも記憶は定着する。", "よく来たな。今日の分、静かに片付けてしまおう。"],
+        ok: ["悪くない。しっかり頭に入っているな。", "完璧だ。その感覚を忘れるなよ。", "見事だ。着実にレベルが上がっている。", "スムーズに出てきたな。いい仕上がりだ。"],
+        combo: ["{n}連続か…大したものだ。この集中力を維持しろ。", "{n}連続マスター。お前の本気、見せてもらったよ。", "圧巻の{n}連続だ。もう誰にも止められないな。"],
+        again: ["気に病むな。間違えた瞬間こそ記憶が一番強くなる。", "惜しかったな。次で確実に仕留めよう。", "一度忘れた方が、思い出したときに深く刻まれる。もう一回だ。"],
+        add: ["{n}件追加したな。新しい武器が増えたわけだ。", "{n}件の登録を確認。一つずつ自分のものにしていこう。"],
+        tap: ["なんだ、息抜きか？少し休んでから再開するのも戦略だ。", "お前の継続力は本物だ。自信を持っていい。", "焦る必要はない。昨日の自分より一歩前へ進めば十分だ。", "いつでもここで見守っている。好きなペースでやれ。"],
+        complete: ["🎉 全フレーズ完全制覇か。…お見事だ。心から敬意を表するよ。"]
+      }
+    };
+
+    const DEFAULT_ITEMS = [
+      {
+        id: crypto.randomUUID(),
+        jp: "お荷物をフロントでお預かりしましょうか？",
+        en: "Would you like us to store your luggage at the front desk?",
+        lang: "en-US",
+        tag: "接客",
+        status: "review",
+        revealed: false
+      },
+      {
+        id: crypto.randomUUID(),
+        jp: "チェックインですか？",
+        en: "Vous êtes ici pour l'enregistrement ?",
+        lang: "fr-FR",
+        tag: "接客",
+        status: "review",
+        revealed: false
+      },
+      {
+        id: crypto.randomUUID(),
+        jp: "それは一理ありますね。",
+        en: "You have a point there.",
+        lang: "en-US",
+        tag: "会話",
+        status: "mastered",
+        revealed: false
+      }
+    ];
+
+    let items = loadItems();
+    let charConfig = loadCharConfig();
+    let currentLang = "ALL";
+    let currentTag = "ALL";
+    let currentFilter = "all";
+    let comboCount = 0;
+    let activeImgSlot = "normal";
+    let moodResetTimer = null;
+    let wasComplete = false;
+
+    const listEl = document.getElementById("phraseList");
+    const autoSpeakEl = document.getElementById("autoSpeak");
+    const importArea = document.getElementById("importArea");
+    const backupArea = document.getElementById("backupArea");
+    const bulkInput = document.getElementById("bulkInput");
+    const bulkLangSelect = document.getElementById("bulkLangSelect");
+    const bulkTagInput = document.getElementById("bulkTagInput");
+    const twoLineModeEl = document.getElementById("twoLineMode");
+    const swapOrderModeEl = document.getElementById("swapOrderMode");
+    const previewBoxEl = document.getElementById("previewBox");
+    const previewSummaryEl = document.getElementById("previewSummary");
+    const previewListEl = document.getElementById("previewList");
+    const singleJpInput = document.getElementById("singleJpInput");
+    const singleEnInput = document.getElementById("singleEnInput");
+    const tagSuggestionsEl = document.getElementById("tagSuggestions");
+    const langFilterBarEl = document.getElementById("langFilterBar");
+    const tagFilterBarEl = document.getElementById("tagFilterBar");
+
+    const progressLabelEl = document.getElementById("progressLabel");
+    const progressPercentEl = document.getElementById("progressPercent");
+    const progressBarEl = document.getElementById("progressBar");
+    const statMasteredEl = document.getElementById("statMastered");
+    const statReviewEl = document.getElementById("statReview");
+    const statTotalEl = document.getElementById("statTotal");
+
+    // キャラ関連要素
+    const charAvatarWrap = document.getElementById("charAvatarWrap");
+    const charAvatarEl = document.getElementById("charAvatar");
+    const charNameDisplay = document.getElementById("charNameDisplay");
+    const charMessageEl = document.getElementById("charMessage");
+    const comboBadgeEl = document.getElementById("comboBadge");
+    const charSettingsEl = document.getElementById("charSettings");
+    const charNameInput = document.getElementById("charNameInput");
+    const charPersonaSelect = document.getElementById("charPersonaSelect");
+    const charImgFileInput = document.getElementById("charImgFileInput");
+
+    LANGUAGES.forEach(l => {
+      const opt = document.createElement("option");
+      opt.value = l.code;
+      opt.textContent = `${l.flag}${l.label}`;
+      bulkLangSelect.appendChild(opt);
+    });
+
+    function getLangInfo(code) {
+      return LANG_MAP[code] || LANGUAGES[0];
+    }
+
+    function loadItems() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return DEFAULT_ITEMS;
+      try {
+        const parsed = JSON.parse(raw);
+        return parsed.map(i => ({
+          ...i,
+          lang: LANG_MAP[i.lang] ? i.lang : "en-US",
+          tag: (i.tag || "").trim()
+        }));
+      } catch {
+        return DEFAULT_ITEMS;
+      }
+    }
+
+    function saveItems() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    }
+
+    function loadCharConfig() {
+      const defaults = {
+        name: "応援パートナー",
+        persona: "gentle",
+        imgs: { normal: "", happy: "", cheer: "" }
+      };
+      const raw = localStorage.getItem(CHAR_STORAGE_KEY);
+      if (!raw) return defaults;
+      try {
+        const parsed = JSON.parse(raw);
+        return {
+          name: parsed.name || defaults.name,
+          persona: PERSONAS[parsed.persona] ? parsed.persona : "gentle",
+          imgs: {
+            normal: parsed.imgs?.normal || "",
+            happy: parsed.imgs?.happy || "",
+            cheer: parsed.imgs?.cheer || ""
+          }
+        };
+      } catch {
+        return defaults;
+      }
+    }
+
+    function saveCharConfig() {
+      try {
+        localStorage.setItem(CHAR_STORAGE_KEY, JSON.stringify(charConfig));
+      } catch {
+        alert("画像の保存容量を超えました。別の軽い画像を選ぶか、画像を1〜2枚に絞ってください。");
+      }
+    }
+
+    function pickRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function setAvatarImage(mood = "normal") {
+      const src = charConfig.imgs[mood] || charConfig.imgs.normal;
+      if (src) {
+        charAvatarEl.innerHTML = `<img src="${src}" alt="character" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" />`;
+      } else {
+        const emojiMap = { normal: "😊", happy: "😆", cheer: "💪" };
+        charAvatarEl.textContent = emojiMap[mood] || "✨";
+      }
+    }
+
+    function renderCharSettingsUI() {
+      charNameDisplay.textContent = charConfig.name;
+      charNameInput.value = charConfig.name;
+      charPersonaSelect.value = charConfig.persona;
+
+      const slotMap = [
+        { key: "normal", id: "thumbNormal", fallback: "😊" },
+        { key: "happy", id: "thumbHappy", fallback: "😆" },
+        { key: "cheer", id: "thumbCheer", fallback: "💪" }
+      ];
+      slotMap.forEach(({ key, id, fallback }) => {
+        const el = document.getElementById(id);
+        if (charConfig.imgs[key]) {
+          el.innerHTML = `<img src="${charConfig.imgs[key]}" style="width:100\%;height:100\%;object-fit:cover;border-radius:50\%;" />`; } else { el.textContent = fallback; } }); }  function playCharAnim(animClass) { charAvatarEl.classList.remove("anim-jump", "anim-nod", "anim-squish"); void charAvatarEl.offsetWidth; charAvatarEl.classList.add(animClass); charAvatarEl.addEventListener("animationend", () => { charAvatarEl.classList.remove(animClass); }, { once: true }); }  function spawnSparkles(count = 5) { const icons = ["✨", "⭐", "💖", "🎵"]; for (let i = 0; i < count; i++) { const sp = document.createElement("span"); sp.className = "sparkle"; sp.textContent = pickRandom(icons); sp.style.left = `${30 +
