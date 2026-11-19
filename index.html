@@ -126,7 +126,7 @@
     .stat-mastered { color: var(--green); font-weight: 700; }
     .stat-review { color: var(--red); font-weight: 700; }
 
-    /* 折りたたみメニュー（一括登録・データ管理） */
+    /* 折りたたみメニュー */
     .tool-row {
       display: flex;
       gap: 12px;
@@ -154,6 +154,33 @@
 
     .panel-area.open { display: block; }
 
+    /* 登録モード切替タブ */
+    .mode-switch {
+      display: flex;
+      background: #f1f3f4;
+      border-radius: 8px;
+      padding: 3px;
+      margin-bottom: 12px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--sub);
+      cursor: pointer;
+    }
+
+    .mode-btn.active {
+      background: #fff;
+      color: var(--blue);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -164,6 +191,8 @@
     @media (max-width: 480px) {
       .form-grid { grid-template-columns: 1fr; }
     }
+
+    .field-group { margin-bottom: 8px; }
 
     .field-group label {
       display: block;
@@ -201,9 +230,31 @@
       cursor: pointer;
     }
 
+    /* 一括登録オプション */
+    .bulk-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .opt-check {
+      font-size: 0.8rem;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #f8f9fa;
+      border: 1px solid var(--border);
+      padding: 4px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
     textarea {
       width: 100%;
-      height: 110px;
+      height: 115px;
       padding: 10px;
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -211,6 +262,39 @@
       resize: vertical;
       font-family: inherit;
     }
+
+    .preview-box {
+      background: #f8f9fa;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin: 8px 0 10px;
+      font-size: 0.8rem;
+      display: none;
+    }
+
+    .preview-box.show { display: block; }
+
+    .preview-summary {
+      font-weight: 700;
+      color: var(--blue);
+      margin-bottom: 4px;
+    }
+
+    .preview-skip {
+      color: var(--sub);
+      font-weight: 400;
+      margin-left: 6px;
+    }
+
+    .preview-list {
+      margin: 0;
+      padding-left: 16px;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .preview-en { color: #174ea6; font-weight: 600; }
 
     .hint {
       font-size: 0.78rem;
@@ -303,6 +387,17 @@
       border-color: var(--blue);
     }
     .btn-primary:hover { background: #1557b0; }
+
+    .btn-paste {
+      background: var(--blue-light);
+      color: var(--blue);
+      border: 1px solid #aecbfa;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
     /* チェックリスト */
     .list {
@@ -492,31 +587,67 @@
       </div>
     </div>
 
-    <!-- 一括登録 ＆ バックアップ管理 -->
+    <!-- 登録 ＆ バックアップ管理 -->
     <div class="card">
       <div class="tool-row">
-        <button class="toggle-link" id="toggleImportBtn">＋ フレーズ一括登録</button>
+        <button class="toggle-link" id="toggleImportBtn">＋ フレーズを追加</button>
         <button class="toggle-link" id="toggleBackupBtn">💾 バックアップ・復元</button>
       </div>
 
-      <!-- 一括登録パネル -->
+      <!-- 登録パネル -->
       <div class="panel-area" id="importArea">
+        <div class="mode-switch">
+          <button type="button" class="mode-btn active" data-mode="bulk">📋 コピペ一括登録</button>
+          <button type="button" class="mode-btn" data-mode="single">✏️ 1件クイック追加</button>
+        </div>
+
+        <!-- 共通：言語・タグ設定 -->
         <div class="form-grid">
-          <div class="field-group">
+          <div class="field-group" style="margin-bottom:0;">
             <label for="bulkLangSelect">言語</label>
             <select id="bulkLangSelect" class="select-input"></select>
           </div>
-          <div class="field-group">
+          <div class="field-group" style="margin-bottom:0;">
             <label for="bulkTagInput">タグ（ジャンル）※空欄OK</label>
             <input type="text" id="bulkTagInput" class="text-input" placeholder="例：接客、英検、挨拶" />
           </div>
         </div>
         <div class="tag-suggestions" id="tagSuggestions"></div>
-        <textarea id="bulkInput" placeholder="例：&#10;チェックアウトは正午まで延長できます / You can extend your check-out until noon.&#10;チェックインですか？ / Vous êtes ici pour l'enregistrement ?"></textarea>
-        <div class="hint">
-          ※1行につき1フレーズ。区切り文字は <strong>/</strong> ・ <strong>|</strong> ・ <strong>タブ</strong> に対応しています。
+
+        <!-- モードA：一括登録 -->
+        <div id="bulkModeArea">
+          <div class="bulk-toolbar">
+            <button type="button" class="btn-paste" id="pasteClipboardBtn">📋 貼り付け</button>
+            <label class="opt-check">
+              <input type="checkbox" id="twoLineMode" /> 2行セット（日→改行→外）
+            </label>
+            <label class="opt-check">
+              <input type="checkbox" id="swapOrderMode" /> 日⇔外を入替
+            </label>
+          </div>
+          <textarea id="bulkInput" placeholder="KeepやAIの出力をそのまま貼り付けられます。&#10;例：&#10;1. お荷物はいくつですか？ / How many pieces of luggage do you have?&#10;・チェックインですか？ : Vous êtes ici pour l'enregistrement ?"></textarea>
+          <div class="preview-box" id="previewBox">
+            <div class="preview-summary" id="previewSummary"></div>
+            <ul class="preview-list" id="previewList"></ul>
+          </div>
+          <div class="hint">
+            ※行頭の番号・箇条書き・☐は自動削除。区切り文字は <strong>/ ／ | : ： → = タブ</strong> に対応。
+          </div>
+          <button class="btn btn-primary" id="addBulkBtn">リストに追加</button>
         </div>
-        <button class="btn btn-primary" id="addBulkBtn">リストに追加</button>
+
+        <!-- モードB：1件クイック追加 -->
+        <div id="singleModeArea" style="display:none;">
+          <div class="field-group">
+            <label for="singleJpInput">日本語（問題）</label>
+            <input type="text" id="singleJpInput" class="text-input" placeholder="例：チェックアウトを延長できますか？" />
+          </div>
+          <div class="field-group">
+            <label for="singleEnInput">外国語（答え）</label>
+            <input type="text" id="singleEnInput" class="text-input" placeholder="例：Can I extend my check-out?" />
+          </div>
+          <button class="btn btn-primary" id="addSingleBtn">1件追加する</button>
+        </div>
       </div>
 
       <!-- バックアップ管理パネル -->
@@ -604,8 +735,8 @@
     ];
 
     let items = loadItems();
-    let currentLang = "ALL"; // "ALL" | 言語コード
-    let currentTag = "ALL";  // "ALL" | "__UNTAGGED__" | タグ名
+    let currentLang = "ALL";
+    let currentTag = "ALL";
     let currentFilter = "all";
 
     const listEl = document.getElementById("phraseList");
@@ -615,6 +746,13 @@
     const bulkInput = document.getElementById("bulkInput");
     const bulkLangSelect = document.getElementById("bulkLangSelect");
     const bulkTagInput = document.getElementById("bulkTagInput");
+    const twoLineModeEl = document.getElementById("twoLineMode");
+    const swapOrderModeEl = document.getElementById("swapOrderMode");
+    const previewBoxEl = document.getElementById("previewBox");
+    const previewSummaryEl = document.getElementById("previewSummary");
+    const previewListEl = document.getElementById("previewList");
+    const singleJpInput = document.getElementById("singleJpInput");
+    const singleEnInput = document.getElementById("singleEnInput");
     const tagSuggestionsEl = document.getElementById("tagSuggestions");
     const langFilterBarEl = document.getElementById("langFilterBar");
     const tagFilterBarEl = document.getElementById("tagFilterBar");
@@ -626,7 +764,6 @@
     const statReviewEl = document.getElementById("statReview");
     const statTotalEl = document.getElementById("statTotal");
 
-    // 言語プルダウン初期化
     LANGUAGES.forEach(l => {
       const opt = document.createElement("option");
       opt.value = l.code;
@@ -664,6 +801,97 @@
       utter.lang = langCode || "en-US";
       utter.rate = 0.95;
       window.speechSynthesis.speak(utter);
+    }
+
+    // 行頭の番号・記号・Keepのチェックボックスなどを除去
+    function cleanLine(str) {
+      return str
+        .replace(/^\s*(?:[\[\(（][xX✓✔\s]?[\]\)）]|☐|☑|✅|□|■|・|•|●|○|\*|-|–|—|\d+\s*[.)．、:])\s*/g, "")
+        .replace(/^\s*(?:[\[\(（][xX✓✔\s]?[\]\)）]|☐|☑|✅|□|■|・|•|●|○|\*|-|–|—|\d+\s*[.)．、:])\s*/g, "")
+        .trim();
+    }
+
+    function makeDupKey(lang, jp, en) {
+      return `${lang}__${jp.trim().toLowerCase()}__${en.trim().toLowerCase()}`;
+    }
+
+    // テキストを解析して新規候補・重複件数を返す
+    function parseBulkText(rawText, lang, isTwoLine, isSwap) {
+      const rawLines = rawText.split(/\r?\n/).map(cleanLine).filter(Boolean);
+      const parsedPairs = [];
+
+      if (isTwoLine) {
+        for (let i = 0; i + 1 < rawLines.length; i += 2) {
+          const a = rawLines[i];
+          const b = rawLines[i + 1];
+          if (a && b) {
+            parsedPairs.push(isSwap ? { jp: b, en: a } : { jp: a, en: b });
+          }
+        }
+      } else {
+        rawLines.forEach(line => {
+          // 優先区切り文字：タブ / ／ | ｜ → => — ＝ =
+          let parts = line.split(/\t|\s*[/／|｜→＝=—]\s*|\s*=>\s*/);
+          // 見つからなければコロン（時刻の 12:00 などを除外）で分割
+          if (parts.length < 2) {
+            parts = line.split(/\s*：\s*|(?<!\d)\s*:\s*(?!\d)/);
+          }
+          if (parts.length >= 2) {
+            const left = parts[0].trim();
+            const right = parts.slice(1).join(" / ").trim();
+            if (left && right) {
+              parsedPairs.push(isSwap ? { jp: right, en: left } : { jp: left, en: right });
+            }
+          }
+        });
+      }
+
+      const existingKeys = new Set(items.map(i => makeDupKey(i.lang, i.jp, i.en)));
+      const seenKeys = new Set();
+      const uniqueNew = [];
+      let skippedCount = 0;
+
+      parsedPairs.forEach(pair => {
+        const key = makeDupKey(lang, pair.jp, pair.en);
+        if (existingKeys.has(key) || seenKeys.has(key)) {
+          skippedCount++;
+        } else {
+          seenKeys.add(key);
+          uniqueNew.push(pair);
+        }
+      });
+
+      return { uniqueNew, skippedCount };
+    }
+
+    function updateBulkPreview() {
+      const text = bulkInput.value.trim();
+      if (!text) {
+        previewBoxEl.classList.remove("show");
+        return;
+      }
+
+      const { uniqueNew, skippedCount } = parseBulkText(
+        text,
+        bulkLangSelect.value,
+        twoLineModeEl.checked,
+        swapOrderModeEl.checked
+      );
+
+      previewBoxEl.classList.add("show");
+      const skipText = skippedCount > 0 ? `<span class="preview-skip">（重複 ${skippedCount}件スキップ）</span>` : "";
+
+      if (uniqueNew.length === 0 && skippedCount === 0) {
+        previewSummaryEl.innerHTML = `<span style="color:var(--red);">認識できるペアがありません（区切り文字や2行モードを確認）</span>`;
+        previewListEl.innerHTML = "";
+        return;
+      }
+
+      previewSummaryEl.innerHTML = `追加予定：${uniqueNew.length}件${skipText}`;
+      const sample = uniqueNew.slice(0, 3);
+      previewListEl.innerHTML = sample.map(p =>
+        `<li>${escapeHtml(p.jp)} → <span class="preview-en">${escapeHtml(p.en)}</span></li>`
+      ).join("") + (uniqueNew.length > 3 ? `<li>…ほか ${uniqueNew.length - 3}件</li>` : "");
     }
 
     function matchesCurrentLang(item) {
@@ -733,7 +961,6 @@
         if (hasUntagged) addChip("タグなし", "__UNTAGGED__");
       }
 
-      // 一括登録用の既存タグ候補（全言語共通で使い回せるように全アイテムから取得）
       const allTags = [...new Set(items.map(i => (i.tag || "").trim()).filter(Boolean))];
       tagSuggestionsEl.innerHTML = "";
       allTags.forEach(tag => {
@@ -927,43 +1154,111 @@
       importArea.classList.remove("open");
     });
 
-    // コピペ一括登録
+    // 一括 / 1件モード切替
+    document.querySelectorAll(".mode-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const isBulk = btn.dataset.mode === "bulk";
+        document.getElementById("bulkModeArea").style.display = isBulk ? "block" : "none";
+        document.getElementById("singleModeArea").style.display = isBulk ? "none" : "block";
+      });
+    });
+
+    // クリップボード貼り付け
+    document.getElementById("pasteClipboardBtn").addEventListener("click", async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (!text) {
+          alert("クリップボードが空です。");
+          return;
+        }
+        bulkInput.value = bulkInput.value ? `${bulkInput.value}\n${text}` : text;
+        updateBulkPreview();
+      } catch {
+        alert("貼り付けの許可が出なかったため、入力欄を長押しして貼り付けてください。");
+      }
+    });
+
+    // プレビュー更新トリガー
+    bulkInput.addEventListener("input", updateBulkPreview);
+    bulkLangSelect.addEventListener("change", updateBulkPreview);
+    twoLineModeEl.addEventListener("change", updateBulkPreview);
+    swapOrderModeEl.addEventListener("change", updateBulkPreview);
+
+    // 一括登録実行
     document.getElementById("addBulkBtn").addEventListener("click", () => {
-      const lines = bulkInput.value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
       const lang = bulkLangSelect.value;
       const tag = bulkTagInput.value.trim();
-      let added = 0;
+      const { uniqueNew, skippedCount } = parseBulkText(
+        bulkInput.value,
+        lang,
+        twoLineModeEl.checked,
+        swapOrderModeEl.checked
+      );
 
-      lines.forEach(line => {
-        const parts = line.split(/\t|\s*\/\s*|\s*\|\s*/);
-        if (parts.length >= 2) {
-          const jp = parts[0].trim();
-          const en = parts.slice(1).join(" / ").trim();
-          if (jp && en) {
-            items.unshift({
-              id: crypto.randomUUID(),
-              jp,
-              en,
-              lang,
-              tag,
-              status: "review",
-              revealed: false
-            });
-            added++;
-          }
-        }
+      if (uniqueNew.length === 0) {
+        alert(skippedCount > 0 ? "すべて登録済みのフレーズでした。" : "取り込めるフレーズがありません。形式を確認してください。");
+        return;
+      }
+
+      // 入力順を保つため逆順で先頭に追加
+      for (let i = uniqueNew.length - 1; i >= 0; i--) {
+        items.unshift({
+          id: crypto.randomUUID(),
+          jp: uniqueNew[i].jp,
+          en: uniqueNew[i].en,
+          lang,
+          tag,
+          status: "review",
+          revealed: false
+        });
+      }
+
+      saveItems();
+      bulkInput.value = "";
+      previewBoxEl.classList.remove("show");
+      importArea.classList.remove("open");
+      currentLang = lang;
+      if (tag) currentTag = tag;
+      render();
+    });
+
+    // 1件クイック追加実行
+    document.getElementById("addSingleBtn").addEventListener("click", () => {
+      const jp = singleJpInput.value.trim();
+      const en = singleEnInput.value.trim();
+      const lang = bulkLangSelect.value;
+      const tag = bulkTagInput.value.trim();
+
+      if (!jp || !en) {
+        alert("日本語と外国語の両方を入力してください。");
+        return;
+      }
+
+      const dupKey = makeDupKey(lang, jp, en);
+      if (items.some(i => makeDupKey(i.lang, i.jp, i.en) === dupKey)) {
+        alert("同じフレーズがすでに登録されています。");
+        return;
+      }
+
+      items.unshift({
+        id: crypto.randomUUID(),
+        jp,
+        en,
+        lang,
+        tag,
+        status: "review",
+        revealed: false
       });
 
-      if (added > 0) {
-        saveItems();
-        bulkInput.value = "";
-        importArea.classList.remove("open");
-        currentLang = lang;
-        if (tag) currentTag = tag;
-        render();
-      } else {
-        alert("「日本語 / 外国語フレーズ」の形式で入力してください。");
-      }
+      saveItems();
+      singleJpInput.value = "";
+      singleEnInput.value = "";
+      currentLang = lang;
+      if (tag) currentTag = tag;
+      render();
+      singleJpInput.focus();
     });
 
     // バックアップ保存
