@@ -615,15 +615,30 @@
       border-radius: 18px;
       font-size: 0.85rem;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background 0.15s, opacity 0.15s;
     }
 
-    .btn:hover { background: #e8eaed; }
+    .btn:hover:not(:disabled) { background: #e8eaed; }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
 
     .btn.active {
       background: #feefc3;
       border-color: var(--accent);
       font-weight: 700;
+    }
+
+    .btn-restore-active {
+      background: var(--blue-light);
+      color: var(--blue);
+      border-color: var(--blue);
+      font-weight: 600;
+    }
+    .btn-restore-active:hover:not(:disabled) {
+      background: #d2e3fc;
     }
 
     .btn-primary {
@@ -985,7 +1000,8 @@
         <button class="btn" data-filter="mastered">覚えた</button>
       </div>
       <div class="actions">
-        <button class="btn" id="shuffleBtn">シャッフル</button>
+        <button class="btn" id="shuffleBtn">🔀 シャッフル</button>
+        <button class="btn" id="restoreOrderBtn" disabled>↩️ 元の順</button>
         <button class="btn" id="resetChecksBtn">チェック全解除</button>
       </div>
     </div>
@@ -1087,6 +1103,7 @@
     let currentLang = "ALL";
     let currentTag = "ALL";
     let currentFilter = "all";
+    let shuffledIds = null; // シャッフル時のみID順を保持（items本体の順は維持）
     let comboCount = 0;
     let activeImgSlot = "normal";
     let moodResetTimer = null;
@@ -1109,6 +1126,8 @@
     const tagSuggestionsEl = document.getElementById("tagSuggestions");
     const langFilterBarEl = document.getElementById("langFilterBar");
     const tagFilterBarEl = document.getElementById("tagFilterBar");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+    const restoreOrderBtn = document.getElementById("restoreOrderBtn");
 
     const progressLabelEl = document.getElementById("progressLabel");
     const progressPercentEl = document.getElementById("progressPercent");
@@ -1145,6 +1164,7 @@
         const parsed = JSON.parse(raw);
         return parsed.map(i => ({
           ...i,
+          id: i.id || crypto.randomUUID(),
           lang: LANG_MAP[i.lang] ? i.lang : "en-US",
           tag: (i.tag || "").trim()
         }));
@@ -1314,6 +1334,37 @@
       } else {
         comboBadgeEl.classList.remove("show");
       }
+    }
+
+    function updateOrderButtons() {
+      const isShuffled = Array.isArray(shuffledIds);
+      shuffleBtn.classList.toggle("active", isShuffled);
+      restoreOrderBtn.disabled = !isShuffled;
+      restoreOrderBtn.classList.toggle("btn-restore-active", isShuffled);
+    }
+
+    function getOrderedItems() {
+      if (!Array.isArray(shuffledIds)) return items;
+      const itemMap = new Map(items.map(i => [i.id, i]));
+      const ordered = [];
+      const seen = new Set();
+
+      // シャッフル後に追加された新規アイテムは先頭に表示
+      items.forEach(item => {
+        if (!shuffledIds.includes(item.id)) {
+          ordered.push(item);
+          seen.add(item.id);
+        }
+      });
+
+      shuffledIds.forEach(id => {
+        if (itemMap.has(id) && !seen.has(id)) {
+          ordered.push(itemMap.get(id));
+          seen.add(id);
+        }
+      });
+
+      return ordered;
     }
 
     function compressImageFile(file, callback) {
@@ -1560,8 +1611,10 @@
     }
 
     function render(triggerCelebrate = false) {
+      updateOrderButtons();
       renderLangControls();
-      const langScoped = items.filter(matchesCurrentLang);
+      const orderedItems = getOrderedItems();
+      const langScoped = orderedItems.filter(matchesCurrentLang);
       renderTagControls(langScoped);
 
       const scoped = langScoped.filter(matchesCurrentTag);
@@ -1691,6 +1744,9 @@
           e.stopPropagation();
           if (!confirm("このフレーズを削除しますか？")) return;
           items = items.filter(i => i.id !== item.id);
+          if (Array.isArray(shuffledIds)) {
+            shuffledIds = shuffledIds.filter(id => id !== item.id);
+          }
           saveItems();
           render();
         });
@@ -1924,6 +1980,7 @@
 
           if (confirm(`${validItems.length}件のフレーズを復元しますか？（現在のリストは上書きされます）`)) {
             items = validItems;
+            shuffledIds = null;
             currentLang = "ALL";
             currentTag = "ALL";
             saveItems();
@@ -1950,13 +2007,20 @@
       });
     });
 
-    // シャッフル
-    document.getElementById("shuffleBtn").addEventListener("click", () => {
-      for (let i = items.length - 1; i > 0; i--) {
+    // シャッフル（元の順番を壊さず表示順のみランダム化）
+    shuffleBtn.addEventListener("click", () => {
+      const ids = items.map(i => i.id);
+      for (let i = ids.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [items[i], items[j]] = [items[j], items[i]];
+        [ids[i], ids[j]] = [ids[j], ids[i]];
       }
-      saveItems();
+      shuffledIds = ids;
+      render();
+    });
+
+    // 元の順に戻す
+    restoreOrderBtn.addEventListener("click", () => {
+      shuffledIds = null;
       render();
     });
 
