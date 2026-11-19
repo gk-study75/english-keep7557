@@ -18,6 +18,8 @@
       --purple-light: #f3e8fd;
       --green: #1e8e3e;
       --green-light: #e6f4ea;
+      --pink: #e91e63;
+      --pink-light: #fce4ec;
       --red: #d93025;
       --checked-bg: #fef7e0;
     }
@@ -67,10 +69,253 @@
     .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 14px;
       margin-bottom: 12px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    /* キャラ応援カード */
+    .char-card {
+      background: linear-gradient(135deg, #ffffff 0%, #fff8fb 100%);
+      border-color: #f8bbd0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .char-layout {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .char-avatar-wrap {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      flex-shrink: 0;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .char-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #f48fb1;
+      background: #fce4ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.6rem;
+      box-shadow: 0 4px 10px rgba(233, 30, 99, 0.16);
+      animation: charBreathe 3.2s ease-in-out infinite;
+      transform-origin: bottom center;
+    }
+
+    .char-avatar.anim-jump {
+      animation: charJump 0.55s cubic-bezier(0.28, 0.84, 0.42, 1) !important;
+    }
+
+    .char-avatar.anim-nod {
+      animation: charNod 0.5s ease-in-out !important;
+    }
+
+    .char-avatar.anim-squish {
+      animation: charSquish 0.45s ease !important;
+    }
+
+    @keyframes charBreathe {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-4px) scale(1.02); }
+    }
+
+    @keyframes charJump {
+      0% { transform: translateY(0) scale(1, 1); }
+      20% { transform: translateY(3px) scale(1.08, 0.92); }
+      50% { transform: translateY(-16px) scale(0.95, 1.06); }
+      75% { transform: translateY(2px) scale(1.04, 0.96); }
+      100% { transform: translateY(0) scale(1, 1); }
+    }
+
+    @keyframes charNod {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      30% { transform: rotate(-6deg) translateY(3px); }
+      65% { transform: rotate(5deg) translateY(-1px); }
+    }
+
+    @keyframes charSquish {
+      0% { transform: scale(1, 1); }
+      30% { transform: scale(1.14, 0.86); }
+      60% { transform: scale(0.92, 1.08); }
+      100% { transform: scale(1, 1); }
+    }
+
+    .sparkle {
+      position: absolute;
+      pointer-events: none;
+      font-size: 1.1rem;
+      animation: sparkleFloat 0.85s ease-out forwards;
+      z-index: 5;
+    }
+
+    @keyframes sparkleFloat {
+      0% { opacity: 1; transform: translate(0, 0) scale(0.6); }
+      100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1.25); }
+    }
+
+    .char-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .char-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 6px;
+    }
+
+    .char-name-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .char-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--pink);
+    }
+
+    .combo-badge {
+      display: none;
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #ff9800, #e91e63);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 999px;
+      animation: comboPop 0.3s ease;
+    }
+
+    .combo-badge.show { display: inline-block; }
+
+    @keyframes comboPop {
+      0% { transform: scale(0.6); }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .char-config-btn {
+      background: none;
+      border: 1px solid #f48fb1;
+      color: var(--pink);
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+
+    .char-bubble {
+      position: relative;
+      background: #fff;
+      border: 1px solid #f8bbd0;
+      border-radius: 12px;
+      padding: 9px 12px;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: var(--text);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .char-bubble::before {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 16px;
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border-left: 1px solid #f8bbd0;
+      border-bottom: 1px solid #f8bbd0;
+      transform: rotate(45deg);
+    }
+
+    /* キャラ設定パネル */
+    .char-settings {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed #f48fb1;
+    }
+
+    .char-settings.open { display: block; }
+
+    .img-slots {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 8px 0;
+    }
+
+    .img-slot {
+      border: 1px dashed #f48fb1;
+      border-radius: 8px;
+      padding: 8px 6px;
+      text-align: center;
+      background: #fff;
+    }
+
+    .img-slot-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--sub);
+      margin-bottom: 4px;
+    }
+
+    .img-slot-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #fce4ec;
+      margin: 0 auto 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .img-slot-btn {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #f8f9fa;
+      cursor: pointer;
+    }
+
+    /* 紙吹雪 */
+    .confetti-piece {
+      position: fixed;
+      top: -12px;
+      width: 10px;
+      height: 14px;
+      z-index: 9999;
+      pointer-events: none;
+      border-radius: 2px;
+      animation: confettiFall var(--dur) linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      85% { opacity: 1; }
+      100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
     }
 
     /* 習熟度ダッシュボード */
@@ -571,6 +816,70 @@
       </label>
     </header>
 
+    <!-- キャラ応援カード -->
+    <div class="card char-card">
+      <div class="char-layout">
+        <div class="char-avatar-wrap" id="charAvatarWrap" title="タップで応援！">
+          <div class="char-avatar" id="charAvatar">✨</div>
+        </div>
+        <div class="char-body">
+          <div class="char-header">
+            <div class="char-name-wrap">
+              <span class="char-name" id="charNameDisplay">応援パートナー</span>
+              <span class="combo-badge" id="comboBadge">🔥 0連続</span>
+            </div>
+            <button type="button" class="char-config-btn" id="toggleCharConfigBtn">⚙️ キャラ設定</button>
+          </div>
+          <div class="char-bubble" id="charMessage">今日も一緒に頑張ろうね！画像を設定すると私が応援するよ♪</div>
+        </div>
+      </div>
+
+      <!-- キャラ設定パネル -->
+      <div class="char-settings" id="charSettings">
+        <div class="form-grid">
+          <div class="field-group" style="margin-bottom:0;">
+            <label for="charNameInput">キャラの名前</label>
+            <input type="text" id="charNameInput" class="text-input" placeholder="例：ミナ、応援パートナー" />
+          </div>
+          <div class="field-group" style="margin-bottom:0;">
+            <label for="charPersonaSelect">性格・口調</label>
+            <select id="charPersonaSelect" class="select-input">
+              <option value="gentle">🌸 優しいお姉さん系</option>
+              <option value="energetic">⚡ 元気な後輩系</option>
+              <option value="tsundere">💢 ちょっとツンデレ系</option>
+              <option value="cool">❄️ クールだけど褒める系</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="hint" style="margin-bottom:4px;">
+          キャラ画像をスマホから選択できます（「通常」1枚だけでもOK！表情差分を入れると反応で切り替わります）
+        </div>
+        <div class="img-slots">
+          <div class="img-slot">
+            <div class="img-slot-label">通常（必須）</div>
+            <div class="img-slot-thumb" id="thumbNormal">😊</div>
+            <button type="button" class="img-slot-btn" data-slot="normal">画像を選ぶ</button>
+          </div>
+          <div class="img-slot">
+            <div class="img-slot-label">喜び（任意）</div>
+            <div class="img-slot-thumb" id="thumbHappy">😆</div>
+            <button type="button" class="img-slot-btn" data-slot="happy">画像を選ぶ</button>
+          </div>
+          <div class="img-slot">
+            <div class="img-slot-label">応援（任意）</div>
+            <div class="img-slot-thumb" id="thumbCheer">💪</div>
+            <button type="button" class="img-slot-btn" data-slot="cheer">画像を選ぶ</button>
+          </div>
+        </div>
+        <input type="file" id="charImgFileInput" accept="image/*" style="display:none;" />
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+          <button type="button" class="btn-del" id="clearCharImgsBtn" style="margin-left:0;">画像をリセット</button>
+          <button type="button" class="btn btn-primary" id="closeCharConfigBtn" style="padding:4px 14px; font-size:0.8rem;">閉じる</button>
+        </div>
+      </div>
+    </div>
+
     <!-- 習熟度ビジュアルダッシュボード -->
     <div class="card">
       <div class="progress-header">
@@ -601,7 +910,6 @@
           <button type="button" class="mode-btn" data-mode="single">✏️ 1件クイック追加</button>
         </div>
 
-        <!-- 共通：言語・タグ設定 -->
         <div class="form-grid">
           <div class="field-group" style="margin-bottom:0;">
             <label for="bulkLangSelect">言語</label>
@@ -614,7 +922,7 @@
         </div>
         <div class="tag-suggestions" id="tagSuggestions"></div>
 
-        <!-- モードA：一括登録 -->
+        <!-- 一括登録 -->
         <div id="bulkModeArea">
           <div class="bulk-toolbar">
             <button type="button" class="btn-paste" id="pasteClipboardBtn">📋 貼り付け</button>
@@ -636,7 +944,7 @@
           <button class="btn btn-primary" id="addBulkBtn">リストに追加</button>
         </div>
 
-        <!-- モードB：1件クイック追加 -->
+        <!-- 1件クイック追加 -->
         <div id="singleModeArea" style="display:none;">
           <div class="field-group">
             <label for="singleJpInput">日本語（問題）</label>
@@ -688,6 +996,7 @@
 
   <script>
     const STORAGE_KEY = "keep_active_recall_v1";
+    const CHAR_STORAGE_KEY = "keep_active_recall_char_v1";
 
     const LANGUAGES = [
       { code: "en-US", label: "英語", flag: "🇺🇸" },
@@ -703,6 +1012,46 @@
     ];
 
     const LANG_MAP = Object.fromEntries(LANGUAGES.map(l => [l.code, l]));
+
+    // 性格別セリフ集
+    const PERSONAS = {
+      gentle: {
+        greet: ["おかえりなさい！今日も自分のペースで進めようね🌸", "来てくれて嬉しいな。1フレーズだけでも立派な前進だよ✨", "今日もコツコツ積み上げていこうね！応援してるよ♪"],
+        ok: ["すごい！完璧に覚えられたね✨", "さすが！ちゃんと身についてるよ🌸", "その調子！どんどん成長してるね♪", "バッチリ！発音もイメージできたかな？"],
+        combo: ["すごい集中力！{n}連続マスターだよ✨", "絶好調だね！{n}連続クリア、本当に尊敬しちゃう🌸", "{n}連続達成！この勢いでどんどん行こう♪"],
+        again: ["大丈夫、思い出す練習が一番記憶に残るんだよ🌸", "惜しい！次に出会ったときはきっと言えるよ✨", "焦らなくて大丈夫。何回でも一緒に付き合うからね♪"],
+        add: ["新しいフレーズを{n}件追加したんだね！一緒に覚えよう✨", "{n}件も登録お疲れさま！少しずつマスターしていこうね🌸"],
+        tap: ["無理しすぎないで、息抜きもしてね🌸", "いつも頑張ってるの、ちゃんと見てるよ✨", "コツコツ続けられるのって本当にすごい才能だよ♪", "ちょっと疲れたら深呼吸してね。応援してるよ！"],
+        complete: ["🎉 全フレーズマスター達成おめでとう！！本当にすごいよ、最高のご褒美をあげたいな✨"]
+      },
+      energetic: {
+        greet: ["待ってましたー！今日もバリバリ覚えちゃいましょ！⚡", "お疲れさまです！まずは1問、サクッと行きましょー！", "おおっ、今日も勉強えらいですっ！全力で応援しますね🔥"],
+        ok: ["ナイスですっ！完璧じゃないですかー！✨", "おおーっ！さすがです、一瞬で覚えちゃいましたね！", "バッチリ決まりましたね！その調子ですー！😆", "すごーい！どんどんマスター増やしましょ！"],
+        combo: ["やばいっ！{n}連続マスターですって！？天才ですか！？🔥", "絶好調すぎますー！{n}連続クリア、止まりませんね！⚡", "{n}連続達成！めっちゃカッコいいですっ✨"],
+        again: ["どんまいです！今の悔しさが次につながるんですよー！💪", "あとちょっと！もう1周したら絶対覚えられますよ！", "大丈夫大丈夫！忘れるのも勉強のうちですっ✨"],
+        add: ["おおっ、{n}件も新しいフレーズ！やる気満々ですねー！🔥", "{n}件追加完了！全部やっつけちゃいましょー！"],
+        tap: ["えへへ、呼んでくれました？今日も応援してますよ！✨", "水分とってます？休憩も大事ですよー！", "毎日ちょっとずつでも続けてるの、ほんと尊敬しますっ！", "よっしゃー！もう1フレーズだけ頑張りましょ！💪"],
+        complete: ["🎉 うわあああ！100%完全制覇おめでとうございますっ！！最高すぎますー！！🎊"]
+      },
+      tsundere: {
+        greet: ["べ、別にあんたを待ってたわけじゃないんだからね！…ほら、早く始めるわよ。", "ちゃんと来たのね。まあ、サボらないのは偉いんじゃない？", "今日も勉強？ふーん、少しは見直してあげてもいいわよ。"],
+        ok: ["な、何よ、ちゃんと覚えてるじゃない…ちょっと見直したわ✨", "ふふん、まあこれくらいできて当然よね！…すごいけど。", "完璧じゃない。…べ、別に褒めてるわけじゃないんだからね！", "やるじゃない。あんたにしては上出来よ♪"],
+        combo: ["ちょ、ちょっと！{n}連続って本気出しすぎじゃない！？…すごいけど！🔥", "{n}連続クリア！？な、何よ急にカッコいいじゃない…！", "ま、また正解！？{n}連続とか、あんた実は天才なの？"],
+        again: ["ほら、だから復習が大事って言ったでしょ！次は絶対に覚えてよね！", "べ、別に責めてるわけじゃないわよ。もう一回やればいいだけでしょ！", "悔しかったら次で一発で当てなさいよね！応援くらいはしてあげるから。"],
+        add: ["{n}件も追加して、ちゃんと全部覚えるんでしょうね？付き合ってあげるけど。", "新しいフレーズが{n}件ね。ふーん、まあ頑張りなさいよ。"],
+        tap: ["な、何タップしてるのよ！集中しなさい！", "無理して倒れたりしないでよね…心配するわけじゃないけど！", "あんたが頑張ってるの、ちょっとくらいは認めてあげてもいいわよ。", "たまには休みなさいよね。効率落ちるでしょ？"],
+        complete: ["🎉 全問マスターですって！？…ほ、本当におめでとう。あんた、最高にカッコいいわよ✨"]
+      },
+      cool: {
+        greet: ["来たな。今日も淡々と、確実に積み上げていこう。", "準備はいいか？少しの時間でも記憶は定着する。", "よく来たな。今日の分、静かに片付けてしまおう。"],
+        ok: ["悪くない。しっかり頭に入っているな。", "完璧だ。その感覚を忘れるなよ。", "見事だ。着実にレベルが上がっている。", "スムーズに出てきたな。いい仕上がりだ。"],
+        combo: ["{n}連続か…大したものだ。この集中力を維持しろ。", "{n}連続マスター。お前の本気、見せてもらったよ。", "圧巻の{n}連続だ。もう誰にも止められないな。"],
+        again: ["気に病むな。間違えた瞬間こそ記憶が一番強くなる。", "惜しかったな。次で確実に仕留めよう。", "一度忘れた方が、思い出したときに深く刻まれる。もう一回だ。"],
+        add: ["{n}件追加したな。新しい武器が増えたわけだ。", "{n}件の登録を確認。一つずつ自分のものにしていこう。"],
+        tap: ["なんだ、息抜きか？少し休んでから再開するのも戦略だ。", "お前の継続力は本物だ。自信を持っていい。", "焦る必要はない。昨日の自分より一歩前へ進めば十分だ。", "いつでもここで見守っている。好きなペースでやれ。"],
+        complete: ["🎉 全フレーズ完全制覇か。…お見事だ。心から敬意を表するよ。"]
+      }
+    };
 
     const DEFAULT_ITEMS = [
       {
@@ -735,9 +1084,14 @@
     ];
 
     let items = loadItems();
+    let charConfig = loadCharConfig();
     let currentLang = "ALL";
     let currentTag = "ALL";
     let currentFilter = "all";
+    let comboCount = 0;
+    let activeImgSlot = "normal";
+    let moodResetTimer = null;
+    let wasComplete = false;
 
     const listEl = document.getElementById("phraseList");
     const autoSpeakEl = document.getElementById("autoSpeak");
@@ -764,10 +1118,21 @@
     const statReviewEl = document.getElementById("statReview");
     const statTotalEl = document.getElementById("statTotal");
 
+    // キャラ関連要素
+    const charAvatarWrap = document.getElementById("charAvatarWrap");
+    const charAvatarEl = document.getElementById("charAvatar");
+    const charNameDisplay = document.getElementById("charNameDisplay");
+    const charMessageEl = document.getElementById("charMessage");
+    const comboBadgeEl = document.getElementById("comboBadge");
+    const charSettingsEl = document.getElementById("charSettings");
+    const charNameInput = document.getElementById("charNameInput");
+    const charPersonaSelect = document.getElementById("charPersonaSelect");
+    const charImgFileInput = document.getElementById("charImgFileInput");
+
     LANGUAGES.forEach(l => {
       const opt = document.createElement("option");
       opt.value = l.code;
-      opt.textContent = `${l.flag} ${l.label}`;
+      opt.textContent = `${l.flag}${l.label}`;
       bulkLangSelect.appendChild(opt);
     });
 
@@ -794,566 +1159,63 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     }
 
-    function speak(text, langCode) {
-      if (!("speechSynthesis" in window)) return;
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = langCode || "en-US";
-      utter.rate = 0.95;
-      window.speechSynthesis.speak(utter);
-    }
-
-    // 行頭の番号・記号・Keepのチェックボックスなどを除去
-    function cleanLine(str) {
-      return str
-        .replace(/^\s*(?:[\[\(（][xX✓✔\s]?[\]\)）]|☐|☑|✅|□|■|・|•|●|○|\*|-|–|—|\d+\s*[.)．、:])\s*/g, "")
-        .replace(/^\s*(?:[\[\(（][xX✓✔\s]?[\]\)）]|☐|☑|✅|□|■|・|•|●|○|\*|-|–|—|\d+\s*[.)．、:])\s*/g, "")
-        .trim();
-    }
-
-    function makeDupKey(lang, jp, en) {
-      return `${lang}__${jp.trim().toLowerCase()}__${en.trim().toLowerCase()}`;
-    }
-
-    // テキストを解析して新規候補・重複件数を返す
-    function parseBulkText(rawText, lang, isTwoLine, isSwap) {
-      const rawLines = rawText.split(/\r?\n/).map(cleanLine).filter(Boolean);
-      const parsedPairs = [];
-
-      if (isTwoLine) {
-        for (let i = 0; i + 1 < rawLines.length; i += 2) {
-          const a = rawLines[i];
-          const b = rawLines[i + 1];
-          if (a && b) {
-            parsedPairs.push(isSwap ? { jp: b, en: a } : { jp: a, en: b });
-          }
-        }
-      } else {
-        rawLines.forEach(line => {
-          // 優先区切り文字：タブ / ／ | ｜ → => — ＝ =
-          let parts = line.split(/\t|\s*[/／|｜→＝=—]\s*|\s*=>\s*/);
-          // 見つからなければコロン（時刻の 12:00 などを除外）で分割
-          if (parts.length < 2) {
-            parts = line.split(/\s*：\s*|(?<!\d)\s*:\s*(?!\d)/);
-          }
-          if (parts.length >= 2) {
-            const left = parts[0].trim();
-            const right = parts.slice(1).join(" / ").trim();
-            if (left && right) {
-              parsedPairs.push(isSwap ? { jp: right, en: left } : { jp: left, en: right });
-            }
-          }
-        });
-      }
-
-      const existingKeys = new Set(items.map(i => makeDupKey(i.lang, i.jp, i.en)));
-      const seenKeys = new Set();
-      const uniqueNew = [];
-      let skippedCount = 0;
-
-      parsedPairs.forEach(pair => {
-        const key = makeDupKey(lang, pair.jp, pair.en);
-        if (existingKeys.has(key) || seenKeys.has(key)) {
-          skippedCount++;
-        } else {
-          seenKeys.add(key);
-          uniqueNew.push(pair);
-        }
-      });
-
-      return { uniqueNew, skippedCount };
-    }
-
-    function updateBulkPreview() {
-      const text = bulkInput.value.trim();
-      if (!text) {
-        previewBoxEl.classList.remove("show");
-        return;
-      }
-
-      const { uniqueNew, skippedCount } = parseBulkText(
-        text,
-        bulkLangSelect.value,
-        twoLineModeEl.checked,
-        swapOrderModeEl.checked
-      );
-
-      previewBoxEl.classList.add("show");
-      const skipText = skippedCount > 0 ? `<span class="preview-skip">（重複 ${skippedCount}件スキップ）</span>` : "";
-
-      if (uniqueNew.length === 0 && skippedCount === 0) {
-        previewSummaryEl.innerHTML = `<span style="color:var(--red);">認識できるペアがありません（区切り文字や2行モードを確認）</span>`;
-        previewListEl.innerHTML = "";
-        return;
-      }
-
-      previewSummaryEl.innerHTML = `追加予定：${uniqueNew.length}件${skipText}`;
-      const sample = uniqueNew.slice(0, 3);
-      previewListEl.innerHTML = sample.map(p =>
-        `<li>${escapeHtml(p.jp)} → <span class="preview-en">${escapeHtml(p.en)}</span></li>`
-      ).join("") + (uniqueNew.length > 3 ? `<li>…ほか ${uniqueNew.length - 3}件</li>` : "");
-    }
-
-    function matchesCurrentLang(item) {
-      if (currentLang === "ALL") return true;
-      return item.lang === currentLang;
-    }
-
-    function matchesCurrentTag(item) {
-      const t = (item.tag || "").trim();
-      if (currentTag === "ALL") return true;
-      if (currentTag === "__UNTAGGED__") return t === "";
-      return t === currentTag;
-    }
-
-    function renderLangControls() {
-      const usedLangCodes = [...new Set(items.map(i => i.lang))];
-      const orderedLangs = LANGUAGES.filter(l => usedLangCodes.includes(l.code));
-
-      if (currentLang !== "ALL" && !usedLangCodes.includes(currentLang)) {
-        currentLang = "ALL";
-      }
-
-      langFilterBarEl.innerHTML = "";
-      if (orderedLangs.length === 0) return;
-
-      const addChip = (label, value) => {
-        const btn = document.createElement("button");
-        btn.className = `chip ${currentLang === value ? "lang-active" : ""}`;
-        btn.textContent = label;
-        btn.addEventListener("click", () => {
-          currentLang = value;
-          render();
-        });
-        langFilterBarEl.appendChild(btn);
+    function loadCharConfig() {
+      const defaults = {
+        name: "応援パートナー",
+        persona: "gentle",
+        imgs: { normal: "", happy: "", cheer: "" }
       };
-
-      addChip("🌐 全言語", "ALL");
-      orderedLangs.forEach(l => addChip(`${l.flag} ${l.label}`, l.code));
-    }
-
-    function renderTagControls(langScopedItems) {
-      const scopedTags = [...new Set(langScopedItems.map(i => (i.tag || "").trim()).filter(Boolean))];
-      const hasUntagged = langScopedItems.some(i => !(i.tag || "").trim());
-
-      if (currentTag !== "ALL" && currentTag !== "__UNTAGGED__" && !scopedTags.includes(currentTag)) {
-        currentTag = "ALL";
-      }
-      if (currentTag === "__UNTAGGED__" && !hasUntagged) {
-        currentTag = "ALL";
-      }
-
-      tagFilterBarEl.innerHTML = "";
-      if (scopedTags.length > 0) {
-        const addChip = (label, value) => {
-          const btn = document.createElement("button");
-          btn.className = `chip ${currentTag === value ? "tag-active" : ""}`;
-          btn.textContent = label;
-          btn.addEventListener("click", () => {
-            currentTag = value;
-            render();
-          });
-          tagFilterBarEl.appendChild(btn);
-        };
-
-        addChip("全タグ", "ALL");
-        scopedTags.forEach(tag => addChip(`# ${tag}`, tag));
-        if (hasUntagged) addChip("タグなし", "__UNTAGGED__");
-      }
-
-      const allTags = [...new Set(items.map(i => (i.tag || "").trim()).filter(Boolean))];
-      tagSuggestionsEl.innerHTML = "";
-      allTags.forEach(tag => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "tag-suggest-btn";
-        btn.textContent = `+ ${tag}`;
-        btn.addEventListener("click", () => {
-          bulkTagInput.value = tag;
-        });
-        tagSuggestionsEl.appendChild(btn);
-      });
-    }
-
-    function updateProgress(scopedItems) {
-      const total = scopedItems.length;
-      const mastered = scopedItems.filter(i => i.status === "mastered").length;
-      const review = total - mastered;
-      const percent = total === 0 ? 0 : Math.round((mastered / total) * 100);
-
-      const parts = [];
-      if (currentLang !== "ALL") parts.push(getLangInfo(currentLang).label);
-      if (currentTag === "__UNTAGGED__") parts.push("タグなし");
-      else if (currentTag !== "ALL") parts.push(`#${currentTag}`);
-
-      const scopeName = parts.length > 0 ? `「${parts.join(" × ")}」の` : "全体の";
-
-      progressPercentEl.textContent = `${percent}%`;
-      progressBarEl.style.width = `${percent}%`;
-      statMasteredEl.textContent = mastered;
-      statReviewEl.textContent = review;
-      statTotalEl.textContent = total;
-
-      if (total > 0 && percent === 100) {
-        progressBarEl.classList.add("complete");
-        progressLabelEl.textContent = `🎉 ${scopeName}フレーズをマスター達成！`;
-      } else {
-        progressBarEl.classList.remove("complete");
-        progressLabelEl.textContent = `${scopeName}マスター達成率`;
-      }
-    }
-
-    function render() {
-      renderLangControls();
-      const langScoped = items.filter(matchesCurrentLang);
-      renderTagControls(langScoped);
-
-      const scoped = langScoped.filter(matchesCurrentTag);
-      updateProgress(scoped);
-
-      const filtered = scoped.filter(item => {
-        if (currentFilter === "review") return item.status !== "mastered";
-        if (currentFilter === "mastered") return item.status === "mastered";
-        return true;
-      });
-
-      if (filtered.length === 0) {
-        listEl.innerHTML = `<div class="empty">該当するフレーズがありません。</div>`;
-        return;
-      }
-
-      listEl.innerHTML = "";
-      filtered.forEach(item => {
-        const div = document.createElement("div");
-        div.className = `item ${item.revealed ? "revealed" : ""}`;
-
-        const langInfo = getLangInfo(item.lang);
-        const statusBadge = item.status === "mastered"
-          ? `<span class="badge-sm status-mastered">覚えた</span>`
-          : `<span class="badge-sm status-review">要復習</span>`;
-        const langBadge = `<span class="badge-sm lang-badge">${langInfo.flag} ${langInfo.label}</span>`;
-        const tagBadge = item.tag
-          ? `<span class="badge-sm tag-badge"># ${escapeHtml(item.tag)}</span>`
-          : "";
-
-        const langOptionsHtml = LANGUAGES.map(l =>
-          `<option value="${l.code}" ${l.code === item.lang ? "selected" : ""}>${l.flag} ${l.label}</option>`
-        ).join("");
-
-        div.innerHTML = `
-          <div class="item-main">
-            <input type="checkbox" class="item-checkbox" ${item.revealed ? "checked" : ""} />
-            <div class="item-content">
-              <div class="jp-text">${escapeHtml(item.jp)}</div>
-              <div class="meta-badges">${langBadge}${statusBadge}${tagBadge}</div>
-              <div class="en-panel">
-                <div class="en-text ${langInfo.rtl ? "rtl" : ""}">${escapeHtml(item.en)}</div>
-                <div class="en-actions">
-                  <button class="btn-sm btn-speak">🔊 発音</button>
-                  <button class="btn-sm btn-again">もう一度</button>
-                  <button class="btn-sm btn-ok">覚えた</button>
-                  <button class="btn-sm btn-tag-edit">🏷️ タグ</button>
-                  <select class="lang-select-sm" title="言語を変更">${langOptionsHtml}</select>
-                  <button class="btn-del" title="削除">削除</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-
-        const checkbox = div.querySelector(".item-checkbox");
-        const mainArea = div.querySelector(".item-main");
-
-        const toggleReveal = (e) => {
-          if (e.target.closest(".en-actions")) return;
-          item.revealed = !item.revealed;
-          saveItems();
-          render();
-          if (item.revealed && autoSpeakEl.checked) {
-            speak(item.en, item.lang);
-          }
-        };
-
-        mainArea.addEventListener("click", (e) => {
-          if (e.target === checkbox) return;
-          toggleReveal(e);
-        });
-        checkbox.addEventListener("change", () => {
-          item.revealed = checkbox.checked;
-          saveItems();
-          render();
-          if (item.revealed && autoSpeakEl.checked) {
-            speak(item.en, item.lang);
-          }
-        });
-
-        div.querySelector(".btn-speak").addEventListener("click", (e) => {
-          e.stopPropagation();
-          speak(item.en, item.lang);
-        });
-
-        div.querySelector(".btn-again").addEventListener("click", (e) => {
-          e.stopPropagation();
-          item.status = "review";
-          item.revealed = false;
-          saveItems();
-          render();
-        });
-
-        div.querySelector(".btn-ok").addEventListener("click", (e) => {
-          e.stopPropagation();
-          item.status = "mastered";
-          item.revealed = false;
-          saveItems();
-          render();
-        });
-
-        div.querySelector(".btn-tag-edit").addEventListener("click", (e) => {
-          e.stopPropagation();
-          const newTag = prompt("タグ名を入力してください（空欄でタグ解除）", item.tag || "");
-          if (newTag === null) return;
-          item.tag = newTag.trim();
-          saveItems();
-          render();
-        });
-
-        div.querySelector(".lang-select-sm").addEventListener("click", (e) => e.stopPropagation());
-        div.querySelector(".lang-select-sm").addEventListener("change", (e) => {
-          e.stopPropagation();
-          item.lang = e.target.value;
-          saveItems();
-          render();
-        });
-
-        div.querySelector(".btn-del").addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (!confirm("このフレーズを削除しますか？")) return;
-          items = items.filter(i => i.id !== item.id);
-          saveItems();
-          render();
-        });
-
-        listEl.appendChild(div);
-      });
-    }
-
-    function escapeHtml(str) {
-      return str.replace(/[&<>"']/g, m => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-      }[m]));
-    }
-
-    // パネル開閉
-    document.getElementById("toggleImportBtn").addEventListener("click", () => {
-      importArea.classList.toggle("open");
-      backupArea.classList.remove("open");
-    });
-
-    document.getElementById("toggleBackupBtn").addEventListener("click", () => {
-      backupArea.classList.toggle("open");
-      importArea.classList.remove("open");
-    });
-
-    // 一括 / 1件モード切替
-    document.querySelectorAll(".mode-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const isBulk = btn.dataset.mode === "bulk";
-        document.getElementById("bulkModeArea").style.display = isBulk ? "block" : "none";
-        document.getElementById("singleModeArea").style.display = isBulk ? "none" : "block";
-      });
-    });
-
-    // クリップボード貼り付け
-    document.getElementById("pasteClipboardBtn").addEventListener("click", async () => {
+      const raw = localStorage.getItem(CHAR_STORAGE_KEY);
+      if (!raw) return defaults;
       try {
-        const text = await navigator.clipboard.readText();
-        if (!text) {
-          alert("クリップボードが空です。");
-          return;
-        }
-        bulkInput.value = bulkInput.value ? `${bulkInput.value}\n${text}` : text;
-        updateBulkPreview();
+        const parsed = JSON.parse(raw);
+        return {
+          name: parsed.name || defaults.name,
+          persona: PERSONAS[parsed.persona] ? parsed.persona : "gentle",
+          imgs: {
+            normal: parsed.imgs?.normal || "",
+            happy: parsed.imgs?.happy || "",
+            cheer: parsed.imgs?.cheer || ""
+          }
+        };
       } catch {
-        alert("貼り付けの許可が出なかったため、入力欄を長押しして貼り付けてください。");
+        return defaults;
       }
-    });
+    }
 
-    // プレビュー更新トリガー
-    bulkInput.addEventListener("input", updateBulkPreview);
-    bulkLangSelect.addEventListener("change", updateBulkPreview);
-    twoLineModeEl.addEventListener("change", updateBulkPreview);
-    swapOrderModeEl.addEventListener("change", updateBulkPreview);
-
-    // 一括登録実行
-    document.getElementById("addBulkBtn").addEventListener("click", () => {
-      const lang = bulkLangSelect.value;
-      const tag = bulkTagInput.value.trim();
-      const { uniqueNew, skippedCount } = parseBulkText(
-        bulkInput.value,
-        lang,
-        twoLineModeEl.checked,
-        swapOrderModeEl.checked
-      );
-
-      if (uniqueNew.length === 0) {
-        alert(skippedCount > 0 ? "すべて登録済みのフレーズでした。" : "取り込めるフレーズがありません。形式を確認してください。");
-        return;
+    function saveCharConfig() {
+      try {
+        localStorage.setItem(CHAR_STORAGE_KEY, JSON.stringify(charConfig));
+      } catch {
+        alert("画像の保存容量を超えました。別の軽い画像を選ぶか、画像を1〜2枚に絞ってください。");
       }
+    }
 
-      // 入力順を保つため逆順で先頭に追加
-      for (let i = uniqueNew.length - 1; i >= 0; i--) {
-        items.unshift({
-          id: crypto.randomUUID(),
-          jp: uniqueNew[i].jp,
-          en: uniqueNew[i].en,
-          lang,
-          tag,
-          status: "review",
-          revealed: false
-        });
+    function pickRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function setAvatarImage(mood = "normal") {
+      const src = charConfig.imgs[mood] || charConfig.imgs.normal;
+      if (src) {
+        charAvatarEl.innerHTML = `<img src="${src}" alt="character" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" />`;
+      } else {
+        const emojiMap = { normal: "😊", happy: "😆", cheer: "💪" };
+        charAvatarEl.textContent = emojiMap[mood] || "✨";
       }
+    }
 
-      saveItems();
-      bulkInput.value = "";
-      previewBoxEl.classList.remove("show");
-      importArea.classList.remove("open");
-      currentLang = lang;
-      if (tag) currentTag = tag;
-      render();
-    });
+    function renderCharSettingsUI() {
+      charNameDisplay.textContent = charConfig.name;
+      charNameInput.value = charConfig.name;
+      charPersonaSelect.value = charConfig.persona;
 
-    // 1件クイック追加実行
-    document.getElementById("addSingleBtn").addEventListener("click", () => {
-      const jp = singleJpInput.value.trim();
-      const en = singleEnInput.value.trim();
-      const lang = bulkLangSelect.value;
-      const tag = bulkTagInput.value.trim();
-
-      if (!jp || !en) {
-        alert("日本語と外国語の両方を入力してください。");
-        return;
-      }
-
-      const dupKey = makeDupKey(lang, jp, en);
-      if (items.some(i => makeDupKey(i.lang, i.jp, i.en) === dupKey)) {
-        alert("同じフレーズがすでに登録されています。");
-        return;
-      }
-
-      items.unshift({
-        id: crypto.randomUUID(),
-        jp,
-        en,
-        lang,
-        tag,
-        status: "review",
-        revealed: false
-      });
-
-      saveItems();
-      singleJpInput.value = "";
-      singleEnInput.value = "";
-      currentLang = lang;
-      if (tag) currentTag = tag;
-      render();
-      singleJpInput.focus();
-    });
-
-    // バックアップ保存
-    document.getElementById("exportBtn").addEventListener("click", () => {
-      const today = new Date().toISOString().slice(0, 10);
-      const blob = new Blob([JSON.stringify(items, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `multilang_keep_backup_${today}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
-
-    // バックアップ復元
-    const importFileInput = document.getElementById("importFileInput");
-    document.getElementById("importFileBtn").addEventListener("click", () => {
-      importFileInput.click();
-    });
-
-    importFileInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const parsed = JSON.parse(event.target.result);
-          if (!Array.isArray(parsed)) throw new Error("形式エラー");
-
-          const validItems = parsed
-            .filter(i => i && typeof i.jp === "string" && typeof i.en === "string")
-            .map(i => ({
-              id: i.id || crypto.randomUUID(),
-              jp: i.jp,
-              en: i.en,
-              lang: LANG_MAP[i.lang] ? i.lang : "en-US",
-              tag: typeof i.tag === "string" ? i.tag.trim() : "",
-              status: i.status === "mastered" ? "mastered" : "review",
-              revealed: false
-            }));
-
-          if (validItems.length === 0) {
-            alert("有効なフレーズデータが見つかりませんでした。");
-            return;
-          }
-
-          if (confirm(`${validItems.length}件のフレーズを復元しますか？（現在のリストは上書きされます）`)) {
-            items = validItems;
-            currentLang = "ALL";
-            currentTag = "ALL";
-            saveItems();
-            backupArea.classList.remove("open");
-            render();
-            alert("復元が完了しました！");
-          }
-        } catch {
-          alert("ファイルの読み込みに失敗しました。バックアップ用のJSONファイルを選んでください。");
-        } finally {
-          importFileInput.value = "";
-        }
-      };
-      reader.readAsText(file);
-    });
-
-    // ステータスフィルター切り替え
-    document.querySelectorAll(".tabs .btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".tabs .btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentFilter = btn.dataset.filter;
-        render();
-      });
-    });
-
-    // シャッフル
-    document.getElementById("shuffleBtn").addEventListener("click", () => {
-      for (let i = items.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [items[i], items[j]] = [items[j], items[i]];
-      }
-      saveItems();
-      render();
-    });
-
-    // チェック全解除
-    document.getElementById("resetChecksBtn").addEventListener("click", () => {
-      items.forEach(i => i.revealed = false);
-      saveItems();
-      render();
-    });
-
-    render();
-  </script>
-</body>
-</html>
+      const slotMap = [
+        { key: "normal", id: "thumbNormal", fallback: "😊" },
+        { key: "happy", id: "thumbHappy", fallback: "😆" },
+        { key: "cheer", id: "thumbCheer", fallback: "💪" }
+      ];
+      slotMap.forEach(({ key, id, fallback }) => {
+        const el = document.getElementById(id);
+        if (charConfig.imgs[key]) {
+          el.innerHTML = `<img src="${charConfig.imgs[key]}" style="width:100\%;height:100\%;object-fit:cover;border-radius:50\%;" />`; } else { el.textContent = fallback; } }); }  function playCharAnim(animClass) { charAvatarEl.classList.remove("anim-jump", "anim-nod", "anim-squish"); void charAvatarEl.offsetWidth; charAvatarEl.classList.add(animClass); charAvatarEl.addEventListener("animationend", () => { charAvatarEl.classList.remove(animClass); }, { once: true }); }  function spawnSparkles(count = 5) { const icons = ["✨", "⭐", "💖", "🎵"]; for (let i = 0; i < count; i++) { const sp = document.createElement("span"); sp.className = "sparkle"; sp.textContent = pickRandom(icons); sp.style.left = `${30 +
